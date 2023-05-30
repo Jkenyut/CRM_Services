@@ -7,4 +7,4 @@ SHOW GRANTS FOR 'superadmin'@'0.0.0.0';
 ```
 
 ### ERD DATABASES
-![](./databases.png)
+![](./databases1.png)
