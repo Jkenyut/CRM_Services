@@ -1,8 +1,8 @@
 package user
 
 import (
+	"cru/entity"
 	"crud/dto"
-	"crud/entity"
 )
 
 type UserParam struct {
