@@ -7,7 +7,7 @@ import (
 )
 
 func GormMysql() *gorm.DB {
-	var db, err = gorm.Open(mysql.Open("root@tcp(127.0.0.1:3306)/login?charset=utf8mb4&parseTime=True&loc=UTC"), &gorm.Config{})
+	var db, err = gorm.Open(mysql.Open("root@tcp(127.0.0.1:3306)/crm_service?charset=utf8mb4&parseTime=True&loc=UTC"), &gorm.Config{})
 	if err != nil {
 		log.Println("gorm.open", err)
 	}
