@@ -40,4 +40,5 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	actorRouter.DELETE("/:id",
 		r.actorRequestHandler.DeleteActorById,
 	)
+
 }

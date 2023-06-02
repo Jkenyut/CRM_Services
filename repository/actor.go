@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"math"
 )
 
 type ActorRepoInterface interface {
 	CreateActor(actor *entity.Actor) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor(page uint) ([]entity.Actor, error)
+	GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error)
 	UpdateActorById(id uint, actor *entity.Actor) (entity.Actor, error)
 	DeleteActorById(id uint) error
 }
@@ -62,13 +63,22 @@ func (repo Actor) GetActorById(id uint) (entity.Actor, error) {
 	return actor, nil
 }
 
-func (repo Actor) GetAllActor(paage uint) ([]entity.Actor, error) {
+func (repo Actor) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error) {
 	var actors []entity.Actor
-	err := repo.db.Omit("password").Find(&actors).Error
-	if err != nil {
-		return nil, err
+	var count int64
+	var limit uint = 20
+	var offset = (limit * (page - 1))
+	result := repo.db.Model(&entity.Actor{}).Count(&count)
+	if result.Error != nil {
+		// Handle the error
+		return 0, 0, 0, 0, nil, result.Error
 	}
-	return actors, nil
+	totalPages := uint(math.Ceil(float64(count) / float64(limit)))
+	err := repo.db.Omit("password").Limit(int(limit)).Offset(int(offset)).Find(&actors).Error
+	if err != nil {
+		return 0, 0, 0, 0, nil, err
+	}
+	return page, limit, int(count), totalPages, actors, nil
 }
 
 func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (entity.Actor, error) {

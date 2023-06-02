@@ -33,9 +33,9 @@ type FindActor struct {
 
 type FindAllActor struct {
 	dto.ResponseMeta
-	Page       int            `json:"page,omitempty"`
-	PerPage    int            `json:"per_page,omitempty"`
+	Page       uint           `json:"page,omitempty"`
+	PerPage    uint           `json:"per_page,omitempty"`
 	Total      int            `json:"total,omitempty"`
-	TotalPages int            `json:"total_pages,omitempty"`
+	TotalPages uint           `json:"total_pages,omitempty"`
 	Data       []entity.Actor `json:"data"`
 }

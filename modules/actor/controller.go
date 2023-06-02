@@ -55,7 +55,8 @@ func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
 }
 
 func (c actorControllerStruct) GetAllActor(page uint) (FindAllActor, error) {
-	actorEntities, err := c.actorUseCase.GetAllActor(page)
+	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page)
+
 	if err != nil {
 		return FindAllActor{}, err
 	}
@@ -72,8 +73,11 @@ func (c actorControllerStruct) GetAllActor(page uint) (FindAllActor, error) {
 			Message:      "Success find all",
 			ResponseTime: "",
 		},
-
-		Data: data,
+		Page:       page,
+		PerPage:    perPage,
+		Total:      total,
+		TotalPages: totalPages,
+		Data:       data,
 	}
 
 	return res, nil

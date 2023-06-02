@@ -3,14 +3,13 @@ package actor
 import (
 	"crm_service/entity"
 	"crm_service/repository"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UseCaseActorInterface interface {
 	CreateActor(actor ActorBody) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor(page uint) ([]entity.Actor, error)
+	GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error)
 	UpdateActorById(id uint, actor UpdateActorBody) (entity.Actor, error)
 	DeleteActorById(id uint) error
 }
@@ -40,10 +39,10 @@ func (uc actorUseCaseStruct) GetActorById(id uint) (entity.Actor, error) {
 	return actor, err
 }
 
-func (uc actorUseCaseStruct) GetAllActor(page uint) ([]entity.Actor, error) {
+func (uc actorUseCaseStruct) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error) {
 	var actor []entity.Actor
-	actor, err := uc.actorRepository.GetAllActor(page)
-	return actor, err
+	page, perPage, total, totalPages, actor, err := uc.actorRepository.GetAllActor(page)
+	return page, perPage, total, totalPages, actor, err
 }
 
 func (uc actorUseCaseStruct) UpdateActorById(id uint, actor UpdateActorBody) (entity.Actor, error) {

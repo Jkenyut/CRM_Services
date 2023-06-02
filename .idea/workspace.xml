@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : actor entity">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity/actor.go" beforeDir="false" afterPath="$PROJECT_DIR$/entity/actor.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/actor/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/actor/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/dto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/request_handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/actor/use_case.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/use_case.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/repository/actor.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/actor.go" afterDir="false" />
     </list>
