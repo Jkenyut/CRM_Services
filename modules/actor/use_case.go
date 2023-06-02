@@ -47,20 +47,20 @@ func (uc actorUseCaseStruct) GetAllActor() ([]entity.Actor, error) {
 }
 
 func (uc actorUseCaseStruct) UpdateActorById(id uint, actor UpdateActorBody) (entity.Actor, error) {
-	var NewActor *entity.Actor
-
 	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(actor.Password), 12)
-	NewActor = &entity.Actor{
+	newActor := entity.Actor{
 		Username: actor.Username,
 		Password: string(hashingPassword),
 		Verified: actor.Verified,
 		Active:   actor.Active,
 	}
-	_, err := uc.actorRepository.UpdateActorById(id, NewActor)
+
+	updatedActor, err := uc.actorRepository.UpdateActorById(id, &newActor)
 	if err != nil {
-		return *NewActor, err
+		return newActor, err
 	}
-	return *NewActor, nil
+
+	return updatedActor, nil
 }
 
 func (uc actorUseCaseStruct) DeleteActorById(id uint) error {

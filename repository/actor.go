@@ -10,7 +10,7 @@ type ActorRepoInterface interface {
 	CreateActor(actor *entity.Actor) (*entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
 	GetAllActor() ([]entity.Actor, error)
-	UpdateActorById(id uint, actor *entity.Actor) (*entity.Actor, error)
+	UpdateActorById(id uint, actor *entity.Actor) (entity.Actor, error)
 	DeleteActorById(id uint) error
 }
 
@@ -69,27 +69,28 @@ func (repo Actor) GetAllActor() ([]entity.Actor, error) {
 	return actors, nil
 }
 
-func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (*entity.Actor, error) {
+func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (entity.Actor, error) {
 	var findActor entity.Actor
 	if id == 1 {
-		return nil, errors.New("actor is super admin cannot update")
+		return entity.Actor{}, errors.New("actor is super admin and cannot be updated")
 	}
 
 	err := repo.db.First(&findActor, "id = ?", id).Error
 	if err != nil {
-		return nil, errors.New("actor not found")
+		return entity.Actor{}, errors.New("actor not found")
 	}
 
-	err = repo.db.Model(&updateActor).Where("id = ?", id).Updates(updateActor).Error
+	err = repo.db.Model(&entity.Actor{}).Where("id = ?", id).Updates(updateActor).Error
 	if err != nil {
-		return nil, errors.New("failed to update actor")
-	}
-	err = repo.db.First(&updateActor, "id = ?", id).Error
-	if err != nil {
-		return nil, errors.New("actor not found")
+		return entity.Actor{}, errors.New("failed to update actor")
 	}
 
-	return updateActor, nil
+	err = repo.db.First(&findActor, "id = ?", id).Error
+	if err != nil {
+		return entity.Actor{}, errors.New("actor not found")
+	}
+
+	return findActor, nil
 }
 
 func (repo Actor) DeleteActorById(id uint) error {
