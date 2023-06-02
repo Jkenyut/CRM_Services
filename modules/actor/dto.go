@@ -11,8 +11,8 @@ type ActorBody struct {
 }
 
 type UpdateActorBody struct {
-	Username string `json:"username" validate:"required,min=1,max=100,alphanum"`
-	Password string `json:"password" validate:"required,min=6,max=100"`
+	Username string `json:"username" validate:"min=1,max=100,alphanum"`
+	Password string `json:"password" validate:"min=6,max=100"`
 	Verified string `json:"verified" validate:"eq=true|eq=false"`
 	Active   string `json:"active" validate:"eq=true|eq=false"`
 }

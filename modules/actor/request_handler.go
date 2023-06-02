@@ -148,14 +148,17 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 	res, err := h.ctr.UpdateById(uint(actorId), request)
 	if err != nil {
 		if err.Error() == "actor not found" {
-			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("actor not found"))
+			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("actor not found"))
+			return
+		} else if err.Error() == "actor is super admin cannot update" {
+			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin cannot update"))
 			return
 		} else {
 			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
 			return
 		}
 	}
-	c.JSON(http.StatusCreated, res)
+	c.JSON(http.StatusOK, res)
 }
 
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {

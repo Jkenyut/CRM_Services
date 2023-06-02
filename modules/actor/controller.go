@@ -3,7 +3,6 @@ package actor
 import (
 	"crm_service/dto"
 	"crm_service/entity"
-	"errors"
 )
 
 type ActorControllerInterface interface {
@@ -45,10 +44,6 @@ func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
 		return FindActor{}, err
 	}
 
-	if actor.ID == 0 {
-		return FindActor{}, errors.New("actor not found")
-	}
-
 	res.ResponseMeta = dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success find actor",
@@ -85,10 +80,6 @@ func (c actorControllerStruct) GetAllActor() (FindAllActor, error) {
 
 func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindActor, error) {
 	actor, err := c.actorUseCase.UpdateActorById(id, req)
-	if actor.ID == 0 {
-		return FindActor{}, errors.New("actor not found")
-	}
-
 	if err != nil {
 		return FindActor{}, err
 	}
