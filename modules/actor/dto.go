@@ -7,12 +7,12 @@ import (
 
 type ActorBody struct {
 	Username string `json:"username" validate:"required,min=1,max=100,alphanum"`
-	Password string `json:"password" validate:"required,min=6,max=100"`
+	Password string `json:"password,omitempty" validate:"required,min=6,max=100"`
 }
 
 type UpdateActorBody struct {
 	Username string `json:"username" validate:"min=1,max=100,alphanum"`
-	Password string `json:"password" validate:"min=6,max=100"`
+	Password string `json:"password,omitempty" validate:"min=6,max=100"`
 	Verified string `json:"verified" validate:"eq=true|eq=false"`
 	Active   string `json:"active" validate:"eq=true|eq=false"`
 }
@@ -23,7 +23,7 @@ type ResponseActorBody struct {
 
 type SuccessCreate struct {
 	dto.ResponseMeta
-	Data ResponseActorBody `json:"data"`
+	Data ActorBody `json:"data"`
 }
 
 type FindActor struct {
@@ -33,5 +33,9 @@ type FindActor struct {
 
 type FindAllActor struct {
 	dto.ResponseMeta
-	Data []entity.Actor `json:"data"`
+	Page       int            `json:"page,omitempty"`
+	PerPage    int            `json:"per_page,omitempty"`
+	Total      int            `json:"total,omitempty"`
+	TotalPages int            `json:"total_pages,omitempty"`
+	Data       []entity.Actor `json:"data"`
 }

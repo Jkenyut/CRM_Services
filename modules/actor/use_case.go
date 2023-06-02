@@ -3,13 +3,14 @@ package actor
 import (
 	"crm_service/entity"
 	"crm_service/repository"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UseCaseActorInterface interface {
 	CreateActor(actor ActorBody) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor() ([]entity.Actor, error)
+	GetAllActor(page uint) ([]entity.Actor, error)
 	UpdateActorById(id uint, actor UpdateActorBody) (entity.Actor, error)
 	DeleteActorById(id uint) error
 }
@@ -19,19 +20,18 @@ type actorUseCaseStruct struct {
 }
 
 func (uc actorUseCaseStruct) CreateActor(actor ActorBody) (entity.Actor, error) {
-	var NewActor *entity.Actor
 
 	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(actor.Password), 12)
-	NewActor = &entity.Actor{
+	NewActor := entity.Actor{
 		Username: actor.Username,
 		Password: string(hashingPassword),
 	}
 
-	_, err := uc.actorRepository.CreateActor(NewActor)
+	createActor, err := uc.actorRepository.CreateActor(&NewActor)
 	if err != nil {
-		return *NewActor, err
+		return NewActor, err
 	}
-	return *NewActor, nil
+	return createActor, nil
 }
 
 func (uc actorUseCaseStruct) GetActorById(id uint) (entity.Actor, error) {
@@ -40,9 +40,9 @@ func (uc actorUseCaseStruct) GetActorById(id uint) (entity.Actor, error) {
 	return actor, err
 }
 
-func (uc actorUseCaseStruct) GetAllActor() ([]entity.Actor, error) {
+func (uc actorUseCaseStruct) GetAllActor(page uint) ([]entity.Actor, error) {
 	var actor []entity.Actor
-	actor, err := uc.actorRepository.GetAllActor()
+	actor, err := uc.actorRepository.GetAllActor(page)
 	return actor, err
 }
 

@@ -8,7 +8,7 @@ import (
 type ActorControllerInterface interface {
 	CreateActor(req ActorBody) (any, error)
 	GetActorById(id uint) (FindActor, error)
-	GetAllActor() (FindAllActor, error)
+	GetAllActor(page uint) (FindAllActor, error)
 	UpdateById(id uint, req UpdateActorBody) (FindActor, error)
 	DeleteActorById(id uint) (dto.ResponseMeta, error)
 }
@@ -30,7 +30,7 @@ func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
 			Message:      "Success Register",
 			ResponseTime: "",
 		},
-		Data: ResponseActorBody{
+		Data: ActorBody{
 			Username: actor.Username,
 		},
 	}
@@ -54,8 +54,8 @@ func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
 	return res, nil
 }
 
-func (c actorControllerStruct) GetAllActor() (FindAllActor, error) {
-	actorEntities, err := c.actorUseCase.GetAllActor()
+func (c actorControllerStruct) GetAllActor(page uint) (FindAllActor, error) {
+	actorEntities, err := c.actorUseCase.GetAllActor(page)
 	if err != nil {
 		return FindAllActor{}, err
 	}
@@ -72,6 +72,7 @@ func (c actorControllerStruct) GetAllActor() (FindAllActor, error) {
 			Message:      "Success find all",
 			ResponseTime: "",
 		},
+
 		Data: data,
 	}
 

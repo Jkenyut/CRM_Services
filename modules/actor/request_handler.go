@@ -95,7 +95,15 @@ func (h RequestHandlerActorStruct) GetActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
-	res, err := h.ctr.GetAllActor()
+	pageStr := c.DefaultQuery("page", "1")
+	page, err := strconv.ParseUint(pageStr, 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
+		return
+	}
+
+	res, err := h.ctr.GetAllActor(uint(page))
 	if err != nil {
 		c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage(err.Error()))
 		return

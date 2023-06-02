@@ -3,13 +3,14 @@ package repository
 import (
 	"crm_service/entity"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 )
 
 type ActorRepoInterface interface {
-	CreateActor(actor *entity.Actor) (*entity.Actor, error)
+	CreateActor(actor *entity.Actor) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor() ([]entity.Actor, error)
+	GetAllActor(page uint) ([]entity.Actor, error)
 	UpdateActorById(id uint, actor *entity.Actor) (entity.Actor, error)
 	DeleteActorById(id uint) error
 }
@@ -25,19 +26,20 @@ func NewActor(dbCrud *gorm.DB) Actor {
 
 }
 
-func (repo Actor) CreateActor(actor *entity.Actor) (*entity.Actor, error) {
+func (repo Actor) CreateActor(actor *entity.Actor) (entity.Actor, error) {
 	var existingActor entity.Actor
 
 	err := repo.db.First(&existingActor, "username = ?", actor.Username).Error
+	fmt.Println(err)
 	if err == nil {
 		// Username already exists, return an error
-		return nil, errors.New("username already taken")
+		return entity.Actor{}, errors.New("username already taken")
 	}
 
 	// Username does not exist, proceed with creating the actor
 	err = repo.db.Create(actor).Error
 	if err != nil {
-		return nil, err
+		return entity.Actor{}, err
 	}
 	registerApproval := entity.RegisterApproval{
 		AdminID:      actor.ID,
@@ -46,23 +48,23 @@ func (repo Actor) CreateActor(actor *entity.Actor) (*entity.Actor, error) {
 	}
 	err = repo.db.Create(&registerApproval).Error
 	if err != nil {
-		return nil, err
+		return entity.Actor{}, err
 	}
-	return actor, nil
+	return *actor, nil
 }
 
 func (repo Actor) GetActorById(id uint) (entity.Actor, error) {
 	var actor entity.Actor
-	err := repo.db.First(&actor, "id = ?", id).Error
+	err := repo.db.Omit("password").First(&actor, "id = ?", id).Error
 	if err != nil {
 		return entity.Actor{}, errors.New("actor not found")
 	}
 	return actor, nil
 }
 
-func (repo Actor) GetAllActor() ([]entity.Actor, error) {
+func (repo Actor) GetAllActor(paage uint) ([]entity.Actor, error) {
 	var actors []entity.Actor
-	err := repo.db.Find(&actors).Error
+	err := repo.db.Omit("password").Find(&actors).Error
 	if err != nil {
 		return nil, err
 	}
