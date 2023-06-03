@@ -4,8 +4,8 @@ import "time"
 
 type Actor struct {
 	ID        uint64    `gorm:"column:id;primaryKey;autoIncrement"`
-	Username  string    `gorm:"column:username;unique;size:255"`
-	Password  string    `json:"password,omitempty" gorm:"column:password;size:255"`
+	Username  string    `gorm:"column:username;not null;unique:username;size:255;index:idx_username_actor"`
+	Password  string    `json:"password,omitempty" gorm:"column:password;not null;size:255"`
 	RoleID    uint32    `gorm:"column:role_id;default:2"`
 	Verified  string    `gorm:"column:verified;type:enum('true','false');default:'false'"`
 	Active    string    `gorm:"column:active;type:enum('true','false');default:'false'"`
