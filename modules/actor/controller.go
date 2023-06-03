@@ -8,9 +8,12 @@ import (
 type ActorControllerInterface interface {
 	CreateActor(req ActorBody) (any, error)
 	GetActorById(id uint) (FindActor, error)
-	GetAllActor(page uint) (FindAllActor, error)
+	GetAllActor(page uint, usernameStr string) (FindAllActor, error)
 	UpdateById(id uint, req UpdateActorBody) (FindActor, error)
 	DeleteActorById(id uint) (dto.ResponseMeta, error)
+	ActivateActorById(id uint) (dto.ResponseMeta, error)
+	DeactivateActorById(id uint) (dto.ResponseMeta, error)
+	//LoginActor(req ActorBody) (any, error)
 }
 
 type actorControllerStruct struct {
@@ -27,7 +30,7 @@ func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
 		ResponseMeta: dto.ResponseMeta{
 			Success:      true,
 			MessageTitle: "Success create actor",
-			Message:      "Success Register",
+			Message:      "Success register",
 			ResponseTime: "",
 		},
 		Data: ActorBody{
@@ -47,15 +50,15 @@ func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
 	res.ResponseMeta = dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success find actor",
-		Message:      "Success Find",
+		Message:      "Success find",
 		ResponseTime: "",
 	}
 	res.Data = actor
 	return res, nil
 }
 
-func (c actorControllerStruct) GetAllActor(page uint) (FindAllActor, error) {
-	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page)
+func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindAllActor, error) {
+	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page, usernameStr)
 
 	if err != nil {
 		return FindAllActor{}, err
@@ -93,7 +96,7 @@ func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindAct
 		ResponseMeta: dto.ResponseMeta{
 			Success:      true,
 			MessageTitle: "Success update actor",
-			Message:      "Success update",
+			Message:      "Success update actor",
 			ResponseTime: "",
 		},
 		Data: actor,
@@ -106,9 +109,34 @@ func (c actorControllerStruct) DeleteActorById(id uint) (dto.ResponseMeta, error
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success delete actor",
-		Message:      "Success delete",
+		Message:      "Success delete actor",
 		ResponseTime: "",
 	}
 	return res, err
-
 }
+
+func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
+	err := c.actorUseCase.ActivateActor(id)
+	res := dto.ResponseMeta{
+		Success:      true,
+		MessageTitle: "Success activate actor",
+		Message:      "Success activate actor",
+		ResponseTime: "",
+	}
+	return res, err
+}
+
+func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, error) {
+	err := c.actorUseCase.ActivateActor(id)
+	res := dto.ResponseMeta{
+		Success:      true,
+		MessageTitle: "Success deactivate actor",
+		Message:      "Success deactivate actor",
+		ResponseTime: "",
+	}
+	return res, err
+}
+
+//func (c actorControllerStruct) LoginActor(req ActorBody) (any, erro) {
+//
+//}

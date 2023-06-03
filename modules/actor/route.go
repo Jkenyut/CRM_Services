@@ -40,5 +40,6 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	actorRouter.DELETE("/:id",
 		r.actorRequestHandler.DeleteActorById,
 	)
-
+	actorRouter.GET("/:id/activate",
+		r.actorRequestHandler.ActivateActorById)
 }

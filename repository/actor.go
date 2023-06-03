@@ -11,9 +11,11 @@ import (
 type ActorRepoInterface interface {
 	CreateActor(actor *entity.Actor) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error)
+	GetAllActor(page uint, username string) (uint, uint, int, uint, []entity.Actor, error)
 	UpdateActorById(id uint, actor *entity.Actor) (entity.Actor, error)
 	DeleteActorById(id uint) error
+	ActivateActor(id uint) error
+	DeactivateActor(id uint) error
 }
 
 type Actor struct {
@@ -62,7 +64,7 @@ func (repo Actor) GetActorById(id uint) (entity.Actor, error) {
 	return actor, nil
 }
 
-func (repo Actor) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error) {
+func (repo Actor) GetAllActor(page uint, username string) (uint, uint, int, uint, []entity.Actor, error) {
 	var actors []entity.Actor
 	var count int64
 	var limit uint = 20
@@ -73,7 +75,7 @@ func (repo Actor) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor,
 		return 0, 0, 0, 0, nil, result.Error
 	}
 	totalPages := uint(math.Ceil(float64(count) / float64(limit)))
-	err := repo.db.Omit("password").Limit(int(limit)).Offset(int(offset)).Find(&actors).Error
+	err := repo.db.Omit("password").Limit(int(limit)).Offset(int(offset)).Where("username LIKE ?", fmt.Sprint("%", username, "%")).Find(&actors).Error
 	if err != nil {
 		return 0, 0, 0, 0, nil, err
 	}
@@ -118,9 +120,58 @@ func (repo Actor) DeleteActorById(id uint) error {
 	if id == 1 {
 		return errors.New("actor is super admin cannot delete")
 	}
-	err := repo.db.Delete(&actor, "id = ?", id).Error
+
+	err := repo.db.First(&actor, "id = ?", id).Error
 	if err != nil {
 		return errors.New("actor not found")
 	}
+	err = repo.db.Delete(&actor, "id = ?", id).Error
+	if err != nil {
+		return errors.New("failed deleted")
+	}
+	return nil
+}
+
+func (repo Actor) ActivateActor(id uint) error {
+	var actor entity.Actor
+	var register entity.RegisterApproval
+
+	err := repo.db.First(&actor, "id = ?", id).Error
+	if err != nil {
+		return errors.New("actor not found")
+	}
+
+	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "activate").Error
+	if err != nil {
+		return errors.New("activate failed")
+	}
+
+	err = repo.db.Model(&actor).Updates(entity.Actor{Verified: "true", Active: "true"}).Error
+	if err != nil {
+		return errors.New("activate failed")
+	}
+
+	return nil
+}
+
+func (repo Actor) DeactivateActor(id uint) error {
+	var actor entity.Actor
+	var register entity.RegisterApproval
+
+	err := repo.db.First(&actor, "id = ?", id).Error
+	if err != nil {
+		return errors.New("actor not found")
+	}
+
+	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "deactivate").Error
+	if err != nil {
+		return errors.New("deactivate failed")
+	}
+
+	err = repo.db.Model(&actor).Updates(entity.Actor{Verified: "false", Active: "false"}).Error
+	if err != nil {
+		return errors.New("deactivate failed")
+	}
+
 	return nil
 }

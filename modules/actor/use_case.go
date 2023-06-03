@@ -9,9 +9,11 @@ import (
 type UseCaseActorInterface interface {
 	CreateActor(actor ActorBody) (entity.Actor, error)
 	GetActorById(id uint) (entity.Actor, error)
-	GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error)
+	GetAllActor(page uint, username string) (uint, uint, int, uint, []entity.Actor, error)
 	UpdateActorById(id uint, actor UpdateActorBody) (entity.Actor, error)
 	DeleteActorById(id uint) error
+	ActivateActor(id uint) error
+	DeactivateActor(id uint) error
 }
 
 type actorUseCaseStruct struct {
@@ -39,9 +41,9 @@ func (uc actorUseCaseStruct) GetActorById(id uint) (entity.Actor, error) {
 	return actor, err
 }
 
-func (uc actorUseCaseStruct) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor, error) {
+func (uc actorUseCaseStruct) GetAllActor(page uint, username string) (uint, uint, int, uint, []entity.Actor, error) {
 	var actor []entity.Actor
-	page, perPage, total, totalPages, actor, err := uc.actorRepository.GetAllActor(page)
+	page, perPage, total, totalPages, actor, err := uc.actorRepository.GetAllActor(page, username)
 	return page, perPage, total, totalPages, actor, err
 }
 
@@ -65,5 +67,14 @@ func (uc actorUseCaseStruct) UpdateActorById(id uint, actor UpdateActorBody) (en
 func (uc actorUseCaseStruct) DeleteActorById(id uint) error {
 	err := uc.actorRepository.DeleteActorById(id)
 	return err
+}
 
+func (uc actorUseCaseStruct) ActivateActor(id uint) error {
+	err := uc.actorRepository.ActivateActor(id)
+	return err
+}
+
+func (uc actorUseCaseStruct) DeactivateActor(id uint) error {
+	err := uc.actorRepository.ActivateActor(id)
+	return err
 }

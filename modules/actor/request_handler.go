@@ -95,17 +95,17 @@ func (h RequestHandlerActorStruct) GetActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
-	userAgent := c.GetHeader("user-agent")
-	fmt.Println(userAgent)
+	//userAgent := c.GetHeader("user-agent")
+	//fmt.Println(userAgent)
 	pageStr := c.DefaultQuery("page", "1")
+	usernameStr := c.DefaultQuery("username", "")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return
 	}
 
-	res, err := h.ctr.GetAllActor(uint(page))
+	res, err := h.ctr.GetAllActor(uint(page), usernameStr)
 	if err != nil {
 		c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage(err.Error()))
 		return
@@ -179,18 +179,6 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		if err.Error() == "actor not found" {
-			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("Actor not found"))
-			return
-		} else if err.Error() == "actor is super admin cannot delete" {
-			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin cannot delete"))
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
-			return
-		}
-	}
 
 	res, err := h.ctr.DeleteActorById(uint(actorId))
 	if err != nil {
@@ -200,6 +188,9 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 		} else if err.Error() == "actor is super admin cannot delete" {
 			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin cannot delete"))
 			return
+		} else if err.Error() == "failed deleted" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("failed deleted"))
+			return
 		} else {
 			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
 			return
@@ -208,3 +199,63 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, res)
 }
+
+func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
+	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	res, err := h.ctr.ActivateActorById(uint(actorId))
+	if err != nil {
+		if err.Error() == "actor not found" {
+			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("Actor not found"))
+			return
+
+		} else if err.Error() == "activate failed" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("activate failed"))
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
+			return
+		}
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
+	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	res, err := h.ctr.DeactivateActorById(uint(actorId))
+	if err != nil {
+		if err.Error() == "actor not found" {
+			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("Actor not found"))
+			return
+
+		} else if err.Error() == "deactivate failed" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("deactivate failed"))
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
+			return
+		}
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+//func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
+//	request := ActorBody{}
+//	err := c.Bind(&request)
+//	fmt.Println(request, err)
+//	if err != nil {
+//		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
+//		return
+//	}
+//
+//	res, err := h.ctr.LoginActor(request)
+//	if err != nil {
+//		if err.Error() == "username already taken" {
+//			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("Username already taken"))
+//			return
+//		} else {
+//			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
+//			return
+//		}
+//	}
+//	c.JSON(http.StatusCreated, res)
+//}
