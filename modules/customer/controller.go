@@ -14,8 +14,6 @@ type CustomerControllerInterface interface {
 	GetAllCustomer(page uint, usernameStr string) (FindAllCustomer, error)
 	UpdateById(id uint, req UpdateCustomerBody) (FindCustomer, error)
 	DeleteCustomerById(id uint) (dto.ResponseMeta, error)
-	ActivateCustomerById(id uint) (dto.ResponseMeta, error)
-	DeactivateCustomerById(id uint) (dto.ResponseMeta, error)
 }
 
 type customerControllerStruct struct {
@@ -120,30 +118,6 @@ func (c customerControllerStruct) DeleteCustomerById(id uint) (dto.ResponseMeta,
 		Success:      true,
 		MessageTitle: "Success delete customer",
 		Message:      "Success delete customer",
-		ResponseTime: fmt.Sprint(time.Since(start)),
-	}
-	return res, err
-}
-
-func (c customerControllerStruct) ActivateCustomerById(id uint) (dto.ResponseMeta, error) {
-	start := time.Now()
-	err := c.customerUseCase.ActivateCustomerById(id)
-	res := dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success activate customer",
-		Message:      "Success activate customer",
-		ResponseTime: fmt.Sprint(time.Since(start)),
-	}
-	return res, err
-}
-
-func (c customerControllerStruct) DeactivateCustomerById(id uint) (dto.ResponseMeta, error) {
-	start := time.Now()
-	err := c.customerUseCase.DeactivateCustomerById(id)
-	res := dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success deactivate customer",
-		Message:      "Success deactivate customer",
 		ResponseTime: fmt.Sprint(time.Since(start)),
 	}
 	return res, err

@@ -11,8 +11,6 @@ type UseCaseCustomerInterface interface {
 	GetAllCustomer(page uint, username string) (uint, uint, int, uint, []entity.Customer, error)
 	UpdateCustomerById(id uint, customer UpdateCustomerBody) (entity.Customer, error)
 	DeleteCustomerById(id uint) error
-	ActivateCustomerById(id uint) error
-	DeactivateCustomerById(id uint) error
 }
 
 type customerUseCaseStruct struct {
@@ -65,15 +63,5 @@ func (uc customerUseCaseStruct) UpdateCustomerById(id uint, customer UpdateCusto
 
 func (uc customerUseCaseStruct) DeleteCustomerById(id uint) error {
 	err := uc.customerRepository.DeleteCustomerById(id)
-	return err
-}
-
-func (uc customerUseCaseStruct) ActivateCustomerById(id uint) error {
-	err := uc.customerRepository.ActivateCustomerById(id)
-	return err
-}
-
-func (uc customerUseCaseStruct) DeactivateCustomerById(id uint) error {
-	err := uc.customerRepository.DeactivateCustomerById(id)
 	return err
 }

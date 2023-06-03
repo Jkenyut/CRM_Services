@@ -14,8 +14,6 @@ type CustomerRepoInterface interface {
 	GetAllCustomer(page uint, username string) (uint, uint, int, uint, []entity.Customer, error)
 	UpdateCustomerById(id uint, customer *entity.Customer) (entity.Customer, error)
 	DeleteCustomerById(id uint) error
-	ActivateCustomerById(id uint) error
-	DeactivateCustomerById(id uint) error
 }
 
 type Customer struct {
@@ -120,52 +118,5 @@ func (repo Customer) DeleteCustomerById(id uint) error {
 	if err != nil {
 		return errors.New("failed deleted")
 	}
-	return nil
-}
-
-func (repo Customer) ActivateCustomerById(id uint) error {
-	var customer entity.Customer
-	var register entity.RegisterApproval
-
-	err := repo.db.First(&customer, "id = ?", id).Error
-	if err != nil {
-		return errors.New("customer not found")
-	}
-
-	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "activate").Error
-	if err != nil {
-		return errors.New("activate failed")
-	}
-
-	//err = repo.db.Model(&customer).Updates(entity.Customer{Verified: "true", Active: "true"}).Error
-	//if err != nil {
-	//	return errors.New("activate failed")
-	//}
-
-	return nil
-}
-
-func (repo Customer) DeactivateCustomerById(id uint) error {
-	var customer entity.Customer
-	var register entity.RegisterApproval
-	if id == 1 {
-		return errors.New("customer is super admin can't deactivate")
-	}
-
-	err := repo.db.First(&customer, "id = ?", id).Error
-	if err != nil {
-		return errors.New("customer not found")
-	}
-
-	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "deactivate").Error
-	if err != nil {
-		return errors.New("deactivate failed")
-	}
-	//
-	//err = repo.db.Model(&customer).Updates(entity.Customer{Verified: "false", Active: "false"}).Error
-	//if err != nil {
-	//	return errors.New("deactivate failed")
-	//}
-
 	return nil
 }
