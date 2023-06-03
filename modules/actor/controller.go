@@ -116,7 +116,7 @@ func (c actorControllerStruct) DeleteActorById(id uint) (dto.ResponseMeta, error
 }
 
 func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
-	err := c.actorUseCase.ActivateActor(id)
+	err := c.actorUseCase.ActivateActorById(id)
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success activate actor",
@@ -127,7 +127,7 @@ func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, err
 }
 
 func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, error) {
-	err := c.actorUseCase.ActivateActor(id)
+	err := c.actorUseCase.DeactivateActorById(id)
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success deactivate actor",

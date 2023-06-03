@@ -226,7 +226,8 @@ func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
 		if err.Error() == "actor not found" {
 			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("Actor not found"))
 			return
-
+		} else if err.Error() == "actor is super admin can't deactivate" {
+			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin can't deactivate"))
 		} else if err.Error() == "deactivate failed" {
 			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("deactivate failed"))
 			return

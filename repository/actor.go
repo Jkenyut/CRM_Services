@@ -14,8 +14,8 @@ type ActorRepoInterface interface {
 	GetAllActor(page uint, username string) (uint, uint, int, uint, []entity.Actor, error)
 	UpdateActorById(id uint, actor *entity.Actor) (entity.Actor, error)
 	DeleteActorById(id uint) error
-	ActivateActor(id uint) error
-	DeactivateActor(id uint) error
+	ActivateActorById(id uint) error
+	DeactivateActorById(id uint) error
 }
 
 type Actor struct {
@@ -132,7 +132,7 @@ func (repo Actor) DeleteActorById(id uint) error {
 	return nil
 }
 
-func (repo Actor) ActivateActor(id uint) error {
+func (repo Actor) ActivateActorById(id uint) error {
 	var actor entity.Actor
 	var register entity.RegisterApproval
 
@@ -154,9 +154,12 @@ func (repo Actor) ActivateActor(id uint) error {
 	return nil
 }
 
-func (repo Actor) DeactivateActor(id uint) error {
+func (repo Actor) DeactivateActorById(id uint) error {
 	var actor entity.Actor
 	var register entity.RegisterApproval
+	if id == 1 {
+		return errors.New("actor is super admin can't deactivate")
+	}
 
 	err := repo.db.First(&actor, "id = ?", id).Error
 	if err != nil {

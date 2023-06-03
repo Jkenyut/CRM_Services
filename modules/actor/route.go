@@ -42,4 +42,6 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	)
 	actorRouter.GET("/:id/activate",
 		r.actorRequestHandler.ActivateActorById)
+	actorRouter.GET("/:id/deactivate",
+		r.actorRequestHandler.DeactivateActorById)
 }
