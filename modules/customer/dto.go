@@ -1,4 +1,4 @@
-package actor
+package customer
 
 import (
 	"crm_service/dto"
@@ -6,15 +6,15 @@ import (
 )
 
 type CustomerBody struct {
-	Firstname string `json:"firstname" validate:"required,min=1,max=100,alpha"`
-	Lastname  string `json:"lastname" validate:"min=1,max=100,alpha"`
+	FirstName string `json:"firstname" validate:"required,min=1,max=100,alpha"`
+	LastName  string `json:"lastname" validate:"min=1,max=100,alpha"`
 	Email     string `json:"email" validate:"required,email"`
 	Avatar    string `json:"avatar" validate:"min=1,max=250,alphanumunicode"`
 }
 
 type UpdateCustomerBody struct {
-	Firstname string `json:"firstname" validate:"required,min=1,max=100,alpha"`
-	Lastname  string `json:"lastname" validate:"min=1,max=100,alpha"`
+	FirstName string `json:"firstname" validate:"required,min=1,max=100,alpha"`
+	LastName  string `json:"lastname" validate:"min=1,max=100,alpha"`
 	Avatar    string `json:"avatar" validate:"min=1,max=250,alphanumunicode"`
 }
 
