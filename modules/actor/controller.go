@@ -3,6 +3,8 @@ package actor
 import (
 	"crm_service/dto"
 	"crm_service/entity"
+	"fmt"
+	"time"
 )
 
 type ActorControllerInterface interface {
@@ -21,6 +23,7 @@ type actorControllerStruct struct {
 }
 
 func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
+	start := time.Now()
 	actor, err := c.actorUseCase.CreateActor(req)
 	if err != nil {
 		return SuccessCreate{}, err
@@ -31,7 +34,7 @@ func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
 			Success:      true,
 			MessageTitle: "Success create actor",
 			Message:      "Success register",
-			ResponseTime: "",
+			ResponseTime: fmt.Sprint(time.Since(start)),
 		},
 		Data: ActorBody{
 			Username: actor.Username,
@@ -41,6 +44,7 @@ func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
 }
 
 func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
+	start := time.Now()
 	var res FindActor
 	actor, err := c.actorUseCase.GetActorById(id)
 	if err != nil {
@@ -51,13 +55,14 @@ func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
 		Success:      true,
 		MessageTitle: "Success find actor",
 		Message:      "Success find",
-		ResponseTime: "",
+		ResponseTime: fmt.Sprint(time.Since(start)),
 	}
 	res.Data = actor
 	return res, nil
 }
 
 func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindAllActor, error) {
+	start := time.Now()
 	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page, usernameStr)
 
 	if err != nil {
@@ -74,7 +79,7 @@ func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindA
 			Success:      true,
 			MessageTitle: "Success find actor",
 			Message:      "Success find all",
-			ResponseTime: "",
+			ResponseTime: fmt.Sprint(time.Since(start)),
 		},
 		Page:       page,
 		PerPage:    perPage,
@@ -87,6 +92,7 @@ func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindA
 }
 
 func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindActor, error) {
+	start := time.Now()
 	actor, err := c.actorUseCase.UpdateActorById(id, req)
 	if err != nil {
 		return FindActor{}, err
@@ -97,7 +103,7 @@ func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindAct
 			Success:      true,
 			MessageTitle: "Success update actor",
 			Message:      "Success update actor",
-			ResponseTime: "",
+			ResponseTime: fmt.Sprint(time.Since(start)),
 		},
 		Data: actor,
 	}
@@ -105,34 +111,37 @@ func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindAct
 }
 
 func (c actorControllerStruct) DeleteActorById(id uint) (dto.ResponseMeta, error) {
+	start := time.Now()
 	err := c.actorUseCase.DeleteActorById(id)
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success delete actor",
 		Message:      "Success delete actor",
-		ResponseTime: "",
+		ResponseTime: fmt.Sprint(time.Since(start)),
 	}
 	return res, err
 }
 
 func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
+	start := time.Now()
 	err := c.actorUseCase.ActivateActorById(id)
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success activate actor",
 		Message:      "Success activate actor",
-		ResponseTime: "",
+		ResponseTime: fmt.Sprint(time.Since(start)),
 	}
 	return res, err
 }
 
 func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, error) {
+	start := time.Now()
 	err := c.actorUseCase.DeactivateActorById(id)
 	res := dto.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success deactivate actor",
 		Message:      "Success deactivate actor",
-		ResponseTime: "",
+		ResponseTime: fmt.Sprint(time.Since(start)),
 	}
 	return res, err
 }
