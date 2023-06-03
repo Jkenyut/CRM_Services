@@ -31,7 +31,6 @@ func (repo Actor) CreateActor(actor *entity.Actor) (entity.Actor, error) {
 	var existingActor entity.Actor
 
 	err := repo.db.First(&existingActor, "username = ?", actor.Username).Error
-	fmt.Println(err)
 	if err == nil {
 		// Username already exists, return an error
 		return entity.Actor{}, errors.New("username already taken")
@@ -67,7 +66,7 @@ func (repo Actor) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor,
 	var actors []entity.Actor
 	var count int64
 	var limit uint = 20
-	var offset = (limit * (page - 1))
+	var offset = limit * (page - 1)
 	result := repo.db.Model(&entity.Actor{}).Count(&count)
 	if result.Error != nil {
 		// Handle the error
@@ -82,14 +81,23 @@ func (repo Actor) GetAllActor(page uint) (uint, uint, int, uint, []entity.Actor,
 }
 
 func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (entity.Actor, error) {
-	var findActor entity.Actor
+	var findActorById entity.Actor
+	var existingActor entity.Actor
+
 	if id == 1 {
 		return entity.Actor{}, errors.New("actor is super admin and cannot be updated")
 	}
 
-	err := repo.db.First(&findActor, "id = ?", id).Error
+	err := repo.db.First(&findActorById, "id = ?", id).Error
 	if err != nil {
 		return entity.Actor{}, errors.New("actor not found")
+	}
+
+	err = repo.db.Where("username = ?", updateActor.Username).Not("username = ?", findActorById.Username).First(&existingActor).Error
+	fmt.Println(existingActor)
+	if err == nil {
+		// Username already exists, return an error
+		return entity.Actor{}, errors.New("username already taken")
 	}
 
 	err = repo.db.Model(&entity.Actor{}).Where("id = ?", id).Updates(updateActor).Error
@@ -97,12 +105,12 @@ func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (entity.Ac
 		return entity.Actor{}, errors.New("failed to update actor")
 	}
 
-	err = repo.db.First(&findActor, "id = ?", id).Error
+	err = repo.db.First(&findActorById, "id = ?", id).Error
 	if err != nil {
 		return entity.Actor{}, errors.New("actor not found")
 	}
 
-	return findActor, nil
+	return findActorById, nil
 }
 
 func (repo Actor) DeleteActorById(id uint) error {

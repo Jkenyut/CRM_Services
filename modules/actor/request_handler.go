@@ -163,6 +163,12 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 		} else if err.Error() == "actor is super admin cannot update" {
 			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin cannot update"))
 			return
+		} else if err.Error() == "username already taken" {
+			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("username already taken"))
+			return
+		} else if err.Error() == "failed to update actor" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("failed to update actor"))
+			return
 		} else {
 			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
 			return
@@ -174,8 +180,16 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
-		return
+		if err.Error() == "actor not found" {
+			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("Actor not found"))
+			return
+		} else if err.Error() == "actor is super admin cannot delete" {
+			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("actor is super admin cannot delete"))
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
+			return
+		}
 	}
 
 	res, err := h.ctr.DeleteActorById(uint(actorId))
