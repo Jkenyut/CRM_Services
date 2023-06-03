@@ -54,7 +54,13 @@ func (h RequestHandlerCustomerStruct) CreateCustomer(c *gin.Context) {
 			case "max":
 				c.JSON(http.StatusUnprocessableEntity, dto.DefaultErrorResponseWithMessage(customErr))
 				return
+			case "email":
+				c.JSON(http.StatusUnprocessableEntity, dto.DefaultErrorResponseWithMessage("email wrong"))
+				return
 			case "alphanum":
+				c.JSON(http.StatusUnprocessableEntity, dto.DefaultErrorResponseWithMessage(customErr))
+				return
+			case "alphanumunicode":
 				c.JSON(http.StatusUnprocessableEntity, dto.DefaultErrorResponseWithMessage(customErr))
 				return
 			}
@@ -62,8 +68,8 @@ func (h RequestHandlerCustomerStruct) CreateCustomer(c *gin.Context) {
 	}
 	res, err := h.ctr.CreateCustomer(request)
 	if err != nil {
-		if err.Error() == "username already taken" {
-			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("Username already taken"))
+		if err.Error() == "email already taken" {
+			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("email already taken"))
 			return
 		} else {
 			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
@@ -98,7 +104,7 @@ func (h RequestHandlerCustomerStruct) GetAllCustomer(c *gin.Context) {
 	//userAgent := c.GetHeader("user-agent")
 	//fmt.Println(userAgent)
 	pageStr := c.DefaultQuery("page", "1")
-	usernameStr := c.DefaultQuery("username", "")
+	usernameStr := c.DefaultQuery("name", "")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
