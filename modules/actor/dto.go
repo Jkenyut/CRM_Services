@@ -17,10 +17,6 @@ type UpdateActorBody struct {
 	Active   string `json:"active" validate:"eq=true|eq=false"`
 }
 
-type ResponseActorBody struct {
-	Username string `json:"username"`
-}
-
 type SuccessCreate struct {
 	dto.ResponseMeta
 	Data ActorBody `json:"data"`
