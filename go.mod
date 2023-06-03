@@ -3,6 +3,9 @@ module crm_service
 go 1.20
 
 require (
+	github.com/JGLTechnologies/gin-rate-limit v1.5.4
+	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/mysql v1.5.1
@@ -10,11 +13,8 @@ require (
 )
 
 require (
-	github.com/JGLTechnologies/gin-rate-limit v1.5.4 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/gin-contrib/cors v1.4.0 // indirect
 	github.com/redis/go-redis/v9 v9.0.2 // indirect
 )
 
@@ -40,7 +40,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/crypto v0.9.0
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
