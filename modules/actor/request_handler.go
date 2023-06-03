@@ -95,6 +95,8 @@ func (h RequestHandlerActorStruct) GetActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
+	userAgent := c.GetHeader("user-agent")
+	fmt.Println(userAgent)
 	pageStr := c.DefaultQuery("page", "1")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
 
