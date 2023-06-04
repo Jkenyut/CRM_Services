@@ -239,24 +239,31 @@ func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-//func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
-//	request := ActorBody{}
-//	err := c.Bind(&request)
-//	fmt.Println(request, err)
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
-//		return
-//	}
-//
-//	res, err := h.ctr.LoginActor(request)
-//	if err != nil {
-//		if err.Error() == "username already taken" {
-//			c.JSON(http.StatusConflict, dto.DefaultErrorResponseWithMessage("Username already taken"))
-//			return
-//		} else {
-//			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
-//			return
-//		}
-//	}
-//	c.JSON(http.StatusCreated, res)
-//}
+func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
+	agent := c.GetHeader("User-Agent")
+	request := ActorBody{}
+	err := c.Bind(&request)
+	fmt.Println(request, err)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
+		return
+	}
+
+	res, err := h.ctr.LoginActor(request, agent)
+	c.Header("Authorization", "Bearer "+res.Data)
+	if err != nil {
+		if err.Error() == "invalid username & password" {
+			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("invalid username & password"))
+			return
+		} else if err.Error() == "actor not found" {
+			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("actor not found"))
+		} else if err.Error() == "failed to generate token" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("failed to generate token"))
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, dto.DefaultErrorResponseWithMessage("Server error"))
+			return
+		}
+	}
+	c.JSON(http.StatusOK, res)
+}

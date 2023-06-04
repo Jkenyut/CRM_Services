@@ -44,4 +44,6 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 		r.actorRequestHandler.ActivateActorById)
 	actorRouter.GET("/:id/deactivate",
 		r.actorRequestHandler.DeactivateActorById)
+	actorRouter.POST("/login",
+		r.actorRequestHandler.LoginActor)
 }

@@ -4,6 +4,7 @@ import (
 	"crm_service/entity"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"math"
 )
@@ -16,6 +17,7 @@ type ActorRepoInterface interface {
 	DeleteActorById(id uint) error
 	ActivateActorById(id uint) error
 	DeactivateActorById(id uint) error
+	LoginActor(actor *entity.Actor) (entity.Actor, error)
 }
 
 type Actor struct {
@@ -177,4 +179,24 @@ func (repo Actor) DeactivateActorById(id uint) error {
 	}
 
 	return nil
+}
+
+func (repo Actor) LoginActor(actor *entity.Actor) (entity.Actor, error) {
+	var existingActor entity.Actor
+
+	err := repo.db.First(&existingActor, "username = ?", actor.Username).Error
+	fmt.Println(existingActor)
+	if err != nil {
+
+		// Username not found, return an error
+		return entity.Actor{}, errors.New("actor not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(existingActor.Password), []byte(actor.Password))
+	if err != nil {
+		// invalid
+		return entity.Actor{}, errors.New("invalid username & password")
+	}
+	return existingActor, err
+
 }

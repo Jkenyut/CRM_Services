@@ -3,6 +3,7 @@ package actor
 import (
 	"crm_service/dto"
 	"crm_service/entity"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type ActorBody struct {
@@ -34,4 +35,15 @@ type FindAllActor struct {
 	Total      int            `json:"total,omitempty"`
 	TotalPages uint           `json:"total_pages,omitempty"`
 	Data       []entity.Actor `json:"data"`
+}
+
+type CustomClaims struct {
+	Role      uint   `json:"role"`
+	UserAgent string `json:"user_agent"`
+	jwt.StandardClaims
+}
+
+type SuccessLogin struct {
+	dto.ResponseMeta
+	Data string `json:"data"`
 }

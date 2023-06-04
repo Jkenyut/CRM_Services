@@ -3,6 +3,7 @@ package actor
 import (
 	"crm_service/entity"
 	"crm_service/repository"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,6 +15,7 @@ type UseCaseActorInterface interface {
 	DeleteActorById(id uint) error
 	ActivateActorById(id uint) error
 	DeactivateActorById(id uint) error
+	LoginActor(actor ActorBody) (entity.Actor, error)
 }
 
 type actorUseCaseStruct struct {
@@ -77,4 +79,19 @@ func (uc actorUseCaseStruct) ActivateActorById(id uint) error {
 func (uc actorUseCaseStruct) DeactivateActorById(id uint) error {
 	err := uc.actorRepository.DeactivateActorById(id)
 	return err
+}
+
+func (uc actorUseCaseStruct) LoginActor(actor ActorBody) (entity.Actor, error) {
+	NewActor := entity.Actor{
+		Username: actor.Username,
+		Password: actor.Password,
+	}
+
+	loginActor, err := uc.actorRepository.LoginActor(&NewActor)
+	fmt.Println(err)
+	if err != nil {
+		return NewActor, err
+	}
+	return loginActor, nil
+
 }

@@ -3,7 +3,11 @@ package actor
 import (
 	"crm_service/dto"
 	"crm_service/entity"
+	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -15,7 +19,7 @@ type ActorControllerInterface interface {
 	DeleteActorById(id uint) (dto.ResponseMeta, error)
 	ActivateActorById(id uint) (dto.ResponseMeta, error)
 	DeactivateActorById(id uint) (dto.ResponseMeta, error)
-	//LoginActor(req ActorBody) (any, error)
+	LoginActor(req ActorBody, agent string) (SuccessLogin, error)
 }
 
 type actorControllerStruct struct {
@@ -146,6 +150,38 @@ func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, e
 	return res, err
 }
 
-//func (c actorControllerStruct) LoginActor(req ActorBody) (any, erro) {
-//
-//}
+func (c actorControllerStruct) LoginActor(req ActorBody, agent string) (SuccessLogin, error) {
+	start := time.Now()
+	actor, err := c.actorUseCase.LoginActor(req)
+	if err != nil {
+		return SuccessLogin{}, err
+	}
+
+	hour, _ := strconv.Atoi(os.Getenv("HOUR"))
+	claims := CustomClaims{Role: uint(actor.RoleID), UserAgent: agent,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(hour) * time.Hour).Unix(),
+		},
+	}
+
+	// Create the token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Sign the token with the secret key
+	tokenString, err := token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_JWT")))
+	if err != nil {
+		return SuccessLogin{}, errors.New("failed generate to generate token")
+	}
+
+	res := SuccessLogin{
+		ResponseMeta: dto.ResponseMeta{
+			Success:      true,
+			MessageTitle: "Success login actor",
+			Message:      "Success login actor",
+			ResponseTime: fmt.Sprint(time.Since(start)),
+		},
+		Data: tokenString,
+	}
+	return res, err
+}
