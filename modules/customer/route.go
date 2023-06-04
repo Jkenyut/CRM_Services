@@ -22,7 +22,7 @@ func NewRouter(
 
 func (r RouterCustomerStruct) Handle(router *gin.Engine) {
 	basepath := "v1/customer"
-	customerRouter := router.Group(basepath)
+	customerRouter := router.Group(basepath, middleware.Auth)
 
 	customerRouter.POST("/register",
 		r.customerRequestHandler.CreateCustomer,

@@ -30,6 +30,11 @@ func RequestHandler(
 var validate = validator.New()
 
 func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
+	role, _ := c.Get("role")
+	if role != 1 {
+		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
+		return
+	}
 	request := ActorBody{}
 	err := c.Bind(&request)
 	fmt.Println(request, err)
@@ -95,8 +100,7 @@ func (h RequestHandlerActorStruct) GetActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
-	//userAgent := c.GetHeader("user-agent")
-	//fmt.Println(userAgent)
+
 	pageStr := c.DefaultQuery("page", "1")
 	usernameStr := c.DefaultQuery("username", "")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
@@ -114,6 +118,11 @@ func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
+	role, _ := c.Get("role")
+	if role != 1 {
+		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
+		return
+	}
 	request := UpdateActorBody{}
 	err := c.Bind(&request)
 	fmt.Println(request, err)
@@ -178,6 +187,11 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
+	role, _ := c.Get("role")
+	if role != 1 {
+		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
+		return
+	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	res, err := h.ctr.DeleteActorById(uint(actorId))
@@ -201,6 +215,12 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
+	role, _ := c.Get("role")
+	fmt.Println(role)
+	if role != 1 {
+		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
+		return
+	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	res, err := h.ctr.ActivateActorById(uint(actorId))
 	if err != nil {
@@ -220,6 +240,11 @@ func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
+	role, _ := c.Get("role")
+	if role != 1 {
+		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
+		return
+	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	res, err := h.ctr.DeactivateActorById(uint(actorId))
 	if err != nil {
@@ -255,8 +280,12 @@ func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 		if err.Error() == "invalid username & password" {
 			c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("invalid username & password"))
 			return
+		} else if err.Error() == "username not activate" {
+			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("username not activate"))
+			return
 		} else if err.Error() == "actor not found" {
 			c.JSON(http.StatusNotFound, dto.DefaultErrorResponseWithMessage("actor not found"))
+			return
 		} else if err.Error() == "failed to generate token" {
 			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("failed to generate token"))
 			return

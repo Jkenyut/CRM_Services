@@ -197,6 +197,10 @@ func (repo Actor) LoginActor(actor *entity.Actor) (entity.Actor, error) {
 		// invalid
 		return entity.Actor{}, errors.New("invalid username & password")
 	}
+
+	if existingActor.Verified != "true" && existingActor.Active != "true" {
+		return entity.Actor{}, errors.New("username not activate")
+	}
 	return existingActor, err
 
 }

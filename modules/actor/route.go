@@ -1,6 +1,7 @@
 package actor
 
 import (
+	"crm_service/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -21,7 +22,8 @@ func NewRouter(
 
 func (r RouterActorStruct) Handle(router *gin.Engine) {
 	basepath := "v1/actor"
-	actorRouter := router.Group(basepath)
+
+	actorRouter := router.Group(basepath, middleware.Auth)
 
 	actorRouter.POST("/register",
 		r.actorRequestHandler.CreateActor,
@@ -42,8 +44,10 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	)
 	actorRouter.GET("/:id/activate",
 		r.actorRequestHandler.ActivateActorById)
+
 	actorRouter.GET("/:id/deactivate",
 		r.actorRequestHandler.DeactivateActorById)
-	actorRouter.POST("/login",
+
+	router.POST("v1/actor/login",
 		r.actorRequestHandler.LoginActor)
 }
