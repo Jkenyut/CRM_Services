@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"crm_service/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -27,10 +28,10 @@ func (r RouterCustomerStruct) Handle(router *gin.Engine) {
 		r.customerRequestHandler.CreateCustomer,
 	)
 
-	customerRouter.GET("/:id",
+	customerRouter.GET("/:id", middleware.CustomerBulk,
 		r.customerRequestHandler.GetCustomerById,
 	)
-	customerRouter.GET("",
+	customerRouter.GET("", middleware.CustomerBulk,
 		r.customerRequestHandler.GetAllCustomer,
 	)
 

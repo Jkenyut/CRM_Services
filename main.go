@@ -19,7 +19,6 @@ func main() {
 	_ = godotenv.Load()
 	db := db2.GormMysql()
 	router := gin.New()
-
 	router.Use(cors.Default())
 	router.Use(helmet.Default())
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
