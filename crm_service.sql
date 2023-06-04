@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 29, 2023 at 02:15 PM
+-- Generation Time: Jun 04, 2023 at 07:58 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -29,9 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `actors` (
   `id` bigint UNSIGNED NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `role_id` int UNSIGNED DEFAULT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role_id` int UNSIGNED DEFAULT '2',
   `verified` enum('true','false') DEFAULT 'false',
   `active` enum('true','false') DEFAULT 'false',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,7 +43,11 @@ CREATE TABLE `actors` (
 --
 
 INSERT INTO `actors` (`id`, `username`, `password`, `role_id`, `verified`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', 'superadmin', 1, 'true', 'true', '2023-05-29 14:10:08', '2023-05-29 14:11:17');
+(1, 'superadmin', '$2a$12$26EAzIyDQ5YZKE6pAeHKoeugjQ98lkXNPOEFjJikPmQReEMK4snoW', 1, 'true', 'true', '2023-06-02 04:41:18', '2023-06-04 05:18:58'),
+(3, 'be', '$2a$12$LLGqut.2ghWEIq7KbqmBgexbC6tys1S52GE7dqghRx/Bn8cvaen2u', 2, 'true', 'true', '2023-06-02 07:33:07', '2023-06-03 09:39:09'),
+(4, 'se', '$2a$12$3Cmx2UK/HVCp1kg0z2yLL.V3DcMN/BoBN4jYhjf1I4J3gOHlARDe6', 2, 'false', 'false', '2023-06-02 11:07:55', '2023-06-03 09:17:29'),
+(6, 's', '$2a$12$jHCAyoN6vT9yyDSzagl6BOl0MbgdICn1fz1GqW3dRlNuhZvegjDvO', 2, 'false', 'false', '2023-06-02 11:12:35', '2023-06-02 11:12:35'),
+(9, 'd', '$2a$12$o5HvC9FBOTQ7Yc/Eyac2HOR36JGnWUMIwipK2YfV6pG25UVK2/v.e', 2, 'false', 'false', '2023-06-04 07:16:11', '2023-06-04 07:16:11');
 
 -- --------------------------------------------------------
 
@@ -72,13 +76,25 @@ INSERT INTO `actor_role` (`id`, `role_name`) VALUES
 
 CREATE TABLE `customer` (
   `id` bigint UNSIGNED NOT NULL,
-  `first_name` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `customer`
+--
+
+INSERT INTO `customer` (`id`, `first_name`, `last_name`, `email`, `avatar`, `created_at`, `updated_at`) VALUES
+(5, 'Michael', 'Lawson', 'michael.lawson@reqres.in', 'https://reqres.in/img/faces/7-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
+(6, 'Lindsay', 'Ferguson', 'lindsay.ferguson@reqres.in', 'https://reqres.in/img/faces/8-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
+(7, 'Tobias', 'Funke', 'tobias.funke@reqres.in', 'https://reqres.in/img/faces/9-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
+(8, 'Byron', 'Fields', 'byron.fields@reqres.in', 'https://reqres.in/img/faces/10-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
+(9, 'George', 'Edwards', 'george.edwards@reqres.in', 'https://reqres.in/img/faces/11-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
+(10, 'Rachel', 'Howell', 'rachel.howell@reqres.in', 'https://reqres.in/img/faces/12-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19');
 
 -- --------------------------------------------------------
 
@@ -94,6 +110,16 @@ CREATE TABLE `register_approval` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
+-- Dumping data for table `register_approval`
+--
+
+INSERT INTO `register_approval` (`id`, `admin_id`, `super_admin_id`, `status`) VALUES
+(3, 3, 1, 'activate'),
+(4, 4, 1, 'deactivate'),
+(5, 6, 1, 'deactivate'),
+(8, 9, 1, 'deactivate');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -103,8 +129,8 @@ CREATE TABLE `register_approval` (
 ALTER TABLE `actors`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD KEY `actor_index_username` (`username`),
-  ADD KEY `actor_role` (`role_id`);
+  ADD KEY `actor_role` (`role_id`),
+  ADD KEY `idx_username_actor` (`username`);
 
 --
 -- Indexes for table `actor_role`
@@ -119,6 +145,8 @@ ALTER TABLE `actor_role`
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_first_name` (`first_name`),
+  ADD KEY `idx_last_name` (`last_name`),
   ADD KEY `customer_index_email` (`email`);
 
 --
@@ -137,7 +165,7 @@ ALTER TABLE `register_approval`
 -- AUTO_INCREMENT for table `actors`
 --
 ALTER TABLE `actors`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `actor_role`
@@ -149,13 +177,13 @@ ALTER TABLE `actor_role`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `register_approval`
 --
 ALTER TABLE `register_approval`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

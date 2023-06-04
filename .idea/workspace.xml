@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : login actor hanler and route">
-      <change afterPath="$PROJECT_DIR$/middleware/auth.go" afterDir="false" />
+    <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : authenticate and authorizations">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/dto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/request_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/route.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/customer/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/customer/route.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/actor.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/actor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crm_service.sql" beforeDir="false" afterPath="$PROJECT_DIR$/crm_service.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +137,8 @@
     <MESSAGE value="fix : hanle customer" />
     <MESSAGE value="feat : bulk xustomer with axios from uri" />
     <MESSAGE value="feat : login actor hanler and route" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat : login actor hanler and route" />
+    <MESSAGE value="feat : authenticate and authorizations" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : authenticate and authorizations" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
