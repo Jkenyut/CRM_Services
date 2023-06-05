@@ -98,7 +98,7 @@ func (repo Actor) UpdateActorById(id uint, updateActor *entity.Actor) (entity.Ac
 	}
 
 	err = repo.db.Where("username = ?", updateActor.Username).Not("username = ?", findActorById.Username).First(&existingActor).Error
-	fmt.Println(existingActor)
+
 	if err == nil {
 		// Username already exists, return an error
 		return entity.Actor{}, errors.New("username already taken")
@@ -185,7 +185,7 @@ func (repo Actor) LoginActor(actor *entity.Actor) (entity.Actor, error) {
 	var existingActor entity.Actor
 
 	err := repo.db.First(&existingActor, "username = ?", actor.Username).Error
-	fmt.Println(existingActor)
+
 	if err != nil {
 
 		// Username not found, return an error

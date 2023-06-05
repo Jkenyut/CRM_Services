@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -37,7 +38,7 @@ func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	}
 	request := ActorBody{}
 	err := c.Bind(&request)
-	fmt.Println(request, err)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return
@@ -125,7 +126,7 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 	}
 	request := UpdateActorBody{}
 	err := c.Bind(&request)
-	fmt.Println(request, err)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return
@@ -216,7 +217,7 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 
 func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
 	role, _ := c.Get("role")
-	fmt.Println(role)
+
 	if role != 1 {
 		c.JSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Not Authorization"))
 		return
@@ -268,7 +269,7 @@ func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 	agent := c.GetHeader("User-Agent")
 	request := ActorBody{}
 	err := c.Bind(&request)
-	fmt.Println(request, err)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return
@@ -295,4 +296,14 @@ func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, res)
+}
+func (h RequestHandlerActorStruct) LogoutActor(c *gin.Context) {
+	start := time.Now()
+	c.Request.Header.Del("Authorization")
+	c.JSON(http.StatusOK, dto.ResponseMeta{
+		Success:      true,
+		MessageTitle: "Success logout actor",
+		Message:      "Success logout actor",
+		ResponseTime: fmt.Sprint(time.Since(start)),
+	})
 }

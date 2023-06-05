@@ -50,4 +50,7 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 
 	router.POST("v1/actor/login",
 		r.actorRequestHandler.LoginActor)
+
+	router.GET("v1/actor/logout",
+		r.actorRequestHandler.LogoutActor)
 }

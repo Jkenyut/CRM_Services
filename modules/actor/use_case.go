@@ -3,7 +3,6 @@ package actor
 import (
 	"crm_service/entity"
 	"crm_service/repository"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -88,7 +87,7 @@ func (uc actorUseCaseStruct) LoginActor(actor ActorBody) (entity.Actor, error) {
 	}
 
 	loginActor, err := uc.actorRepository.LoginActor(&NewActor)
-	fmt.Println(err)
+
 	if err != nil {
 		return NewActor, err
 	}

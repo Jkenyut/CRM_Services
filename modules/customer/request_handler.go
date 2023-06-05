@@ -32,7 +32,7 @@ var validate = validator.New()
 func (h RequestHandlerCustomerStruct) CreateCustomer(c *gin.Context) {
 	request := CustomerBody{}
 	err := c.Bind(&request)
-	fmt.Println(request, err)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return
@@ -101,8 +101,7 @@ func (h RequestHandlerCustomerStruct) GetCustomerById(c *gin.Context) {
 }
 
 func (h RequestHandlerCustomerStruct) GetAllCustomer(c *gin.Context) {
-	//userAgent := c.GetHeader("user-agent")
-	//fmt.Println(userAgent)
+
 	pageStr := c.DefaultQuery("page", "1")
 	usernameStr := c.DefaultQuery("name", "")
 	page, err := strconv.ParseUint(pageStr, 10, 64)
@@ -122,7 +121,7 @@ func (h RequestHandlerCustomerStruct) GetAllCustomer(c *gin.Context) {
 func (h RequestHandlerCustomerStruct) UpdateCustomerById(c *gin.Context) {
 	request := UpdateCustomerBody{}
 	err := c.Bind(&request)
-	fmt.Println(request, err)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.DefaultBadRequestResponse())
 		return

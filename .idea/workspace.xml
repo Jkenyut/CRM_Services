@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : authenticate and authorizations">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b2e9f8e5-3080-4519-b154-4e3c22199a12.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b2e9f8e5-3080-4519-b154-4e3c22199a12.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crm_service.sql" beforeDir="false" afterPath="$PROJECT_DIR$/crm_service.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/actor/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/request_handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/actor/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/route.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/actor/use_case.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/use_case.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/customer/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/customer/request_handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repository/actor.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/actor.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +95,25 @@
       <recent name="D:\INTERSHIP BRI\BOOTCAMP DIBIMBING GOLANG\crm_service\modules\actors" />
       <recent name="D:\INTERSHIP BRI\BOOTCAMP DIBIMBING GOLANG\crm_service\dto" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="sql" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="sql" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
