@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : authenticate and authorizations">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b2e9f8e5-3080-4519-b154-4e3c22199a12.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b2e9f8e5-3080-4519-b154-4e3c22199a12.xml" afterDir="false" />
+    <list default="true" id="6d130043-8d78-48ef-b635-3c0c544ac737" name="Changes" comment="feat : route logout">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/request_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/route.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/route.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/actor/use_case.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/actor/use_case.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/customer/request_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/customer/request_handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repository/actor.go" beforeDir="false" afterPath="$PROJECT_DIR$/repository/actor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +156,8 @@
     <MESSAGE value="feat : bulk xustomer with axios from uri" />
     <MESSAGE value="feat : login actor hanler and route" />
     <MESSAGE value="feat : authenticate and authorizations" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat : authenticate and authorizations" />
+    <MESSAGE value="feat : route logout" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : route logout" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
