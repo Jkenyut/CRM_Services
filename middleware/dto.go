@@ -1,6 +1,6 @@
 package middleware
 
-import "github.com/dgrijalva/jwt-go"
+import "github.com/golang-jwt/jwt/v5"
 
 type Response struct {
 	Data []User `json:"data"`
@@ -17,5 +17,5 @@ type User struct {
 type CustomClaims struct {
 	Role      uint   `json:"role"`
 	UserAgent string `json:"user_agent"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }

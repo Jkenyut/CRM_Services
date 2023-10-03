@@ -11,12 +11,14 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"os"
 	"time"
 )
 
 func main() {
 
-	_ = godotenv.Load()
+	godotenv.Load("local.env")
+	fmt.Println(os.Getenv("CONNECT_DB"))
 	db := db2.GormMysql()
 	router := gin.New()
 	router.Use(cors.Default())

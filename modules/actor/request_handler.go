@@ -297,6 +297,7 @@ func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, res)
 }
+
 func (h RequestHandlerActorStruct) LogoutActor(c *gin.Context) {
 	start := time.Now()
 	c.Request.Header.Del("Authorization")
