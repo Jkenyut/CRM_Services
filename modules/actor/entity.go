@@ -1,17 +1,17 @@
 package actor
 
 import (
-	"crm_service/dto"
-	"crm_service/entity"
+	. "crm_service/dto"
+	"crm_service/model"
 	"github.com/dgrijalva/jwt-go"
 )
 
-type ActorBody struct {
+type RequestActor struct {
 	Username string `json:"username" validate:"required,min=1,max=100,alphanum"`
 	Password string `json:"password,omitempty" validate:"required,min=6,max=100"`
 }
 
-type UpdateActorBody struct {
+type RequestUpdateActor struct {
 	Username string `json:"username" validate:"min=1,max=100,alphanum"`
 	Password string `json:"password,omitempty" validate:"min=6,max=100"`
 	Verified string `json:"verified" validate:"eq=true|eq=false"`
@@ -19,22 +19,22 @@ type UpdateActorBody struct {
 }
 
 type SuccessCreate struct {
-	dto.ResponseMeta
-	Data ActorBody `json:"data"`
+	ResponseMeta
+	Data RequestActor `json:"data"`
 }
 
 type FindActor struct {
-	dto.ResponseMeta
-	Data entity.Actor `json:"data"`
+	ResponseMeta
+	Data model.Actor `json:"data"`
 }
 
 type FindAllActor struct {
-	dto.ResponseMeta
-	Page       uint           `json:"page,omitempty"`
-	PerPage    uint           `json:"per_page,omitempty"`
-	Total      int            `json:"total,omitempty"`
-	TotalPages uint           `json:"total_pages,omitempty"`
-	Data       []entity.Actor `json:"data"`
+	ResponseMeta
+	Page       uint          `json:"page,omitempty"`
+	PerPage    uint          `json:"per_page,omitempty"`
+	Total      int           `json:"total,omitempty"`
+	TotalPages uint          `json:"total_pages,omitempty"`
+	Data       []model.Actor `json:"data"`
 }
 
 type CustomClaims struct {
@@ -44,6 +44,6 @@ type CustomClaims struct {
 }
 
 type SuccessLogin struct {
-	dto.ResponseMeta
+	ResponseMeta
 	Data string `json:"data"`
 }

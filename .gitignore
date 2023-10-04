@@ -30,3 +30,5 @@ gen
 go.work
 local.env
 *.env
+config.yaml
+config

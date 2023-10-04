@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"crm_service/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 )
 
 func Auth(c *gin.Context) {
-
 	bearer := c.GetHeader("Authorization")
 	tokenAuth := strings.Split(bearer, " ")
 
@@ -28,7 +26,7 @@ func Auth(c *gin.Context) {
 		return []byte(os.Getenv("ACCESS_TOKEN_JWT")), nil
 	})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature token is invalid"))
+		c.JSON(http.StatusBadRequest, "signature token is invalid")
 		c.Abort() // Stop execution of subsequent middleware or handlers
 		return
 	}
@@ -36,20 +34,20 @@ func Auth(c *gin.Context) {
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 
 		if claims.ExpiresAt.Before(time.Now()) {
-			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("token expired"))
+			c.JSON(http.StatusBadRequest, "token expired")
 			c.Abort() // Stop execution of subsequent middleware or handlers
-			return
+
 		}
 		if claims.UserAgent != c.GetHeader("User-Agent") {
-			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature agent is invalid"))
+			c.JSON(http.StatusBadRequest, "signature agent is invalid")
 			c.Abort() // Stop execution of subsequent middleware or handlers
-			return
+
 		}
 		c.Set("role", claims.Role)
 	} else {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature is invalid"))
+		c.JSON(http.StatusBadRequest, "signature is invalid")
 		c.Abort() // Stop execution of subsequent middleware or handlers
-		return
+
 	}
 
 	c.Next()

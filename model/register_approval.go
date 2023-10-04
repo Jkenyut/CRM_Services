@@ -1,4 +1,4 @@
-package entity
+package model
 
 type RegisterApproval struct {
 	ID           uint64 `gorm:"column:id;primaryKey;autoIncrement"`

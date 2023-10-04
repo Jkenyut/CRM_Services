@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"crm_service/entity"
+	"crm_service/model"
 	db2 "crm_service/utils/db"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -28,7 +28,7 @@ func CustomerBulk(c *gin.Context) {
 
 	// Access the retrieved data
 	for _, customer := range responseData.Data {
-		var existingCustomer entity.Customer
+		var existingCustomer model.Customer
 
 		err := db.First(&existingCustomer, "email = ?", customer.Email).Error
 		if err == nil {
@@ -36,7 +36,7 @@ func CustomerBulk(c *gin.Context) {
 			continue
 		}
 		// Email does not exist, proceed with creating the customer
-		db.Table("customer").Create(&entity.Customer{FirstName: customer.FirstName, LastName: customer.LastName, Email: customer.Email, Avatar: customer.Avatar})
+		db.Table("customer").Create(&model.Customer{FirstName: customer.FirstName, LastName: customer.LastName, Email: customer.Email, Avatar: customer.Avatar})
 
 	}
 	// Call c.Next() to pass control to the next middleware or route handler

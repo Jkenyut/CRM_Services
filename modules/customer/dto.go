@@ -2,7 +2,7 @@ package customer
 
 import (
 	"crm_service/dto"
-	"crm_service/entity"
+	"crm_service/model"
 )
 
 type CustomerBody struct {
@@ -25,14 +25,14 @@ type SuccessCreate struct {
 
 type FindCustomer struct {
 	dto.ResponseMeta
-	Data entity.Customer `json:"data"`
+	Data model.Customer `json:"data"`
 }
 
 type FindAllCustomer struct {
 	dto.ResponseMeta
-	Page       uint              `json:"page,omitempty"`
-	PerPage    uint              `json:"per_page,omitempty"`
-	Total      int               `json:"total,omitempty"`
-	TotalPages uint              `json:"total_pages,omitempty"`
-	Data       []entity.Customer `json:"data"`
+	Page       uint             `json:"page,omitempty"`
+	PerPage    uint             `json:"per_page,omitempty"`
+	Total      int              `json:"total,omitempty"`
+	TotalPages uint             `json:"total_pages,omitempty"`
+	Data       []model.Customer `json:"data"`
 }

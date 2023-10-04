@@ -1,15 +1,15 @@
 package customer
 
 import (
-	"crm_service/entity"
+	"crm_service/model"
 	"crm_service/repository"
 )
 
 type UseCaseCustomerInterface interface {
-	CreateCustomer(customer CustomerBody) (entity.Customer, error)
-	GetCustomerById(id uint) (entity.Customer, error)
-	GetAllCustomer(page uint, username string) (uint, uint, int, uint, []entity.Customer, error)
-	UpdateCustomerById(id uint, customer UpdateCustomerBody) (entity.Customer, error)
+	CreateCustomer(customer CustomerBody) (model.Customer, error)
+	GetCustomerById(id uint) (model.Customer, error)
+	GetAllCustomer(page uint, username string) (uint, uint, int, uint, []model.Customer, error)
+	UpdateCustomerById(id uint, customer UpdateCustomerBody) (model.Customer, error)
 	DeleteCustomerById(id uint) error
 }
 
@@ -17,9 +17,9 @@ type customerUseCaseStruct struct {
 	customerRepository repository.CustomerRepoInterface
 }
 
-func (uc customerUseCaseStruct) CreateCustomer(customer CustomerBody) (entity.Customer, error) {
+func (uc customerUseCaseStruct) CreateCustomer(customer CustomerBody) (model.Customer, error) {
 
-	NewCustomer := entity.Customer{
+	NewCustomer := model.Customer{
 		FirstName: customer.FirstName,
 		LastName:  customer.LastName,
 		Email:     customer.Email,
@@ -33,21 +33,21 @@ func (uc customerUseCaseStruct) CreateCustomer(customer CustomerBody) (entity.Cu
 	return createCustomer, nil
 }
 
-func (uc customerUseCaseStruct) GetCustomerById(id uint) (entity.Customer, error) {
-	var customer entity.Customer
+func (uc customerUseCaseStruct) GetCustomerById(id uint) (model.Customer, error) {
+	var customer model.Customer
 	customer, err := uc.customerRepository.GetCustomerById(id)
 	return customer, err
 }
 
-func (uc customerUseCaseStruct) GetAllCustomer(page uint, username string) (uint, uint, int, uint, []entity.Customer, error) {
-	var customer []entity.Customer
+func (uc customerUseCaseStruct) GetAllCustomer(page uint, username string) (uint, uint, int, uint, []model.Customer, error) {
+	var customer []model.Customer
 	page, perPage, total, totalPages, customer, err := uc.customerRepository.GetAllCustomer(page, username)
 	return page, perPage, total, totalPages, customer, err
 }
 
-func (uc customerUseCaseStruct) UpdateCustomerById(id uint, customer UpdateCustomerBody) (entity.Customer, error) {
+func (uc customerUseCaseStruct) UpdateCustomerById(id uint, customer UpdateCustomerBody) (model.Customer, error) {
 
-	newCustomer := entity.Customer{
+	newCustomer := model.Customer{
 		FirstName: customer.FirstName,
 		LastName:  customer.LastName,
 		Avatar:    customer.Avatar,

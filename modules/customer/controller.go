@@ -3,7 +3,7 @@ package customer
 import (
 	"crm_service/dto"
 
-	"crm_service/entity"
+	"crm_service/model"
 	"fmt"
 	"time"
 )
@@ -70,7 +70,7 @@ func (c customerControllerStruct) GetAllCustomer(page uint, usernameStr string) 
 		return FindAllCustomer{}, err
 	}
 
-	data := make([]entity.Customer, len(customerEntities))
+	data := make([]model.Customer, len(customerEntities))
 	for i, customerEntity := range customerEntities {
 		data[i] = customerEntity
 	}
