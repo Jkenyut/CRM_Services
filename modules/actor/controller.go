@@ -1,12 +1,12 @@
 package actor
 
 import (
+	"context"
 	"crm_service/dto"
 	"crm_service/model"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,115 +14,151 @@ import (
 )
 
 type ControllerActorInterface interface {
-	//CreateActor(req ActorRequest) (any, error)
-	//GetActorById(id uint) (FindActor, error)
-	//GetAllActor(page uint, usernameStr string) (FindAllActor, error)
-	//UpdateById(id uint, req UpdateActorRequest) (FindActor, error)
-	//DeleteActorById(id uint) (dto.ResponseMeta, error)
+	CreateActor(ctx context.Context, req RequestActor) (dto.DefaultResponse, int, dto.DefaultResponse)
+	GetActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse)
+	GetAllActor(ctx context.Context, page uint64, username string) (dto.DefaultResponse, int, dto.DefaultResponse)
+	UpdateActorById(ctx context.Context, id uint64, req RequestUpdateActor) (dto.DefaultResponse, int, dto.DefaultResponse)
+	DeleteActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse)
 	//ActivateActorById(id uint) (dto.ResponseMeta, error)
 	//DeactivateActorById(id uint) (dto.ResponseMeta, error)
 
-	LoginActor(ctx *gin.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse)
+	LoginActor(ctx context.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse)
 }
 
 type actorControllerStruct struct {
 	actorRepository RepositoryActorInterface
 }
 
-//func (c actorControllerStruct) CreateActor(req ActorRequest) (any, error) {
-//	start := time.Now()
-//	actor, err := c.actorUseCase.CreateActor(req)
-//	if err != nil {
-//		return SuccessCreate{}, err
-//	}
-//
-//	res := SuccessCreate{
-//		ResponseMeta: dto.ResponseMeta{
-//			Success:      true,
-//			Message:      "Success register",
-//			ResponseTime: fmt.Sprint(time.Since(start)),
-//		},
-//		Data: ActorRequest{
-//			Username: actor.Username,
-//		},
-//	}
-//	return res, nil
-//}
-//
-//func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
-//	start := time.Now()
-//	var res FindActor
-//	actor, err := c.actorUseCase.GetActorById(id)
-//	if err != nil {
-//		return FindActor{}, err
-//	}
-//
-//	res.ResponseMeta = dto.ResponseMeta{
-//		Success:      true,
-//		Message:      "Success find",
-//		ResponseTime: fmt.Sprint(time.Since(start)),
-//	}
-//	res.Data = actor
-//	return res, nil
-//}
-//
-//func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindAllActor, error) {
-//	start := time.Now()
-//	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page, usernameStr)
-//
-//	if err != nil {
-//		return FindAllActor{}, err
-//	}
-//
-//	data := make([]model.Actor, len(actorEntities))
-//	for i, actorEntity := range actorEntities {
-//		data[i] = actorEntity
-//	}
-//
-//	res := FindAllActor{
-//		ResponseMeta: dto.ResponseMeta{
-//			Success:      true,
-//			Message:      "Success find all",
-//			ResponseTime: fmt.Sprint(time.Since(start)),
-//		},
-//		Page:       page,
-//		PerPage:    perPage,
-//		Total:      total,
-//		TotalPages: totalPages,
-//		Data:       data,
-//	}
-//
-//	return res, nil
-//}
-//
-//func (c actorControllerStruct) UpdateById(id uint, req UpdateActorRequest) (FindActor, error) {
-//	start := time.Now()
-//	actor, err := c.actorUseCase.UpdateActorById(id, req)
-//	if err != nil {
-//		return FindActor{}, err
-//	}
-//
-//	res := FindActor{
-//		ResponseMeta: dto.ResponseMeta{
-//			Success:      true,
-//			Message:      "Success update actor",
-//			ResponseTime: fmt.Sprint(time.Since(start)),
-//		},
-//		Data: actor,
-//	}
-//	return res, nil
-//}
-//
-//func (c actorControllerStruct) DeleteActorById(id uint) (dto.ResponseMeta, error) {
-//	start := time.Now()
-//	err := c.actorUseCase.DeleteActorById(id)
-//	res := dto.ResponseMeta{
-//		Success:      true,
-//		Message:      "Success delete actor",
-//		ResponseTime: fmt.Sprint(time.Since(start)),
-//	}
-//	return res, err
-//}
+func (c actorControllerStruct) CreateActor(ctx context.Context, req RequestActor) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var actorRepo model.Actor
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
+	//hashing password
+	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
+	reqActor := RequestActor{
+		Username: req.Username,
+		Password: string(hashingPassword),
+	}
+
+	// create actor
+	status, err := c.actorRepository.CreateActor(ctx, reqActor)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	//get data
+	status, err = c.actorRepository.GetActorByUsername(ctx, reqActor, &actorRepo)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	//req approval
+	reqApproval := RequestApproval{
+		ID: actorRepo.ID,
+	}
+
+	//create approval
+	status, err = c.actorRepository.CreateApproval(ctx, &reqApproval)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = dto.DefaultSuccessResponseWithMessage("actor created", status, actorRepo)
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) GetActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var actorRepo model.Actor
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
+	//get data by id
+	status, err := c.actorRepository.GetActorById(ctx, id, &actorRepo)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+	response = dto.DefaultSuccessResponseWithMessage("Get actor", status, actorRepo)
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) GetAllActor(ctx context.Context, page uint64, username string) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var actorRepo []model.Actor
+	var actorCountRepo model.Actor
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
+	var limit uint64 = 30
+	status, err := c.actorRepository.GetCountRowsActor(ctx, &actorCountRepo)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	status, err = c.actorRepository.GetAllActor(ctx, page, limit, username, &actorRepo)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	resMessage := FindAllActor{
+		Page:       page,
+		PerPage:    uint64(len(actorRepo)),
+		TotalPages: uint64(math.Ceil(float64(actorCountRepo.Total) / float64(limit))),
+		Data:       actorRepo,
+	}
+
+	response = dto.DefaultSuccessResponseWithMessage("Get all actor", status, resMessage)
+
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) UpdateActorById(ctx context.Context, id uint64, req RequestUpdateActor) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var actorRepo model.Actor
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
+	//check authorization
+	if id == 1 {
+		errorMessage = dto.DefaultErrorResponseWithMessage("not authorization update", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//update data by id
+	status, err := c.actorRepository.UpdateActorById(ctx, id, req)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	//get data by id
+	status, err = c.actorRepository.GetActorById(ctx, id, &actorRepo)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = dto.DefaultSuccessResponseWithMessage("Get actor", status, actorRepo)
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) DeleteActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+	status, err := c.actorRepository.DeleteActorById(ctx, id)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = dto.DefaultSuccessResponseWithMessage("delete actor", status, "")
+	return response, status, errorMessage
+}
+
 //
 //func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
 //	start := time.Now()
@@ -146,25 +182,28 @@ type actorControllerStruct struct {
 //	return res, err
 //}
 
-func (c actorControllerStruct) LoginActor(ctx *gin.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse) {
-	start := time.Now()
+func (c actorControllerStruct) LoginActor(ctx context.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse) {
 	var actorRepo model.Actor
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
 	status, err := c.actorRepository.LoginActor(ctx, req, &actorRepo)
 	if err != nil {
-		errorMessage := dto.DefaultErrorResponseWithMessage(err.Error(), fmt.Sprint(time.Since(start)), strconv.Itoa(status))
-		return dto.DefaultResponse{}, status, errorMessage
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(actorRepo.Password), []byte(req.Password))
 	if err != nil {
-		// invalid
-		errorMessage := dto.DefaultErrorResponseWithMessage("invalid username & password", fmt.Sprint(time.Since(start)), strconv.Itoa(status))
-		return dto.DefaultResponse{}, http.StatusUnauthorized, errorMessage
+		// invalid password
+		errorMessage = dto.DefaultErrorResponseWithMessage("invalid username & password", status)
+		return response, http.StatusUnauthorized, errorMessage
 	}
 
+	//check access
 	if actorRepo.Verified != "true" && actorRepo.Active != "true" {
-		errorMessage := dto.DefaultErrorResponseWithMessage("account not activated", fmt.Sprint(time.Since(start)), strconv.Itoa(status))
-		return dto.DefaultResponse{}, http.StatusForbidden, errorMessage
+		errorMessage = dto.DefaultErrorResponseWithMessage("account not activated", status)
+		return response, http.StatusForbidden, errorMessage
 	}
 
 	hour, _ := strconv.Atoi(os.Getenv("HOUR"))
@@ -181,10 +220,10 @@ func (c actorControllerStruct) LoginActor(ctx *gin.Context, req RequestActor, ag
 	// Sign the token with the secret key
 	tokenString, err := token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_JWT")))
 	if err != nil {
-		errorMessage := dto.DefaultErrorResponseWithMessage(err.Error(), fmt.Sprint(time.Since(start)), strconv.Itoa(status))
-		return dto.DefaultResponse{}, http.StatusInternalServerError, errorMessage
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, http.StatusInternalServerError, errorMessage
 	}
 
-	res := dto.DefaultSuccessResponseWithMessage("login success", fmt.Sprint(time.Since(start)), strconv.Itoa(status), tokenString)
-	return res, status, dto.DefaultResponse{}
+	response = dto.DefaultSuccessResponseWithMessage("login success", status, tokenString)
+	return response, status, errorMessage
 }

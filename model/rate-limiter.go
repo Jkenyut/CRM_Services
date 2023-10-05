@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func KeyFunc(c *gin.Context) string {
@@ -13,5 +14,5 @@ func KeyFunc(c *gin.Context) string {
 
 func ErrorHandler(c *gin.Context, info ratelimit.Info) {
 	fmt.Print(info)
-	c.JSON(429, dto.DefaultErrorResponseWithMessage("error", "1892", "400"))
+	c.AbortWithStatusJSON(http.StatusTooManyRequests, dto.DefaultErrorResponseWithMessage("error", http.StatusTooManyRequests))
 }

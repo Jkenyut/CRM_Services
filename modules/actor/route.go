@@ -1,6 +1,7 @@
 package actor
 
 import (
+	"crm_service/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -20,24 +21,24 @@ func NewRouter(
 }
 
 func (r RouterActorStruct) Handle(router *gin.Engine) {
-	//basepath := "v1/actor"
+	basepath := "v1/actor"
+
+	actorRouter := router.Group(basepath, middleware.Auth)
 	//
-	//actorRouter := router.Group(basepath, middleware.Auth)
-	//
-	//actorRouter.POST("/register",
-	//	r.actorRequestHandler.CreateActor,
-	//)
-	//
-	//actorRouter.GET("/:id",
-	//	r.actorRequestHandler.GetActorById,
-	//)
-	//actorRouter.GET("",
-	//	r.actorRequestHandler.GetAllActor,
-	//)
-	//
-	//actorRouter.PUT("/:id",
-	//	r.actorRequestHandler.UpdateActorById,
-	//)
+	actorRouter.POST("/register",
+		r.actorRequestHandler.CreateActor,
+	)
+
+	actorRouter.GET("/:id",
+		r.actorRequestHandler.GetActorById,
+	)
+	actorRouter.GET("",
+		r.actorRequestHandler.GetAllActor,
+	)
+
+	actorRouter.PUT("/:id",
+		r.actorRequestHandler.UpdateActorById,
+	)
 	//actorRouter.DELETE("/:id",
 	//	r.actorRequestHandler.DeleteActorById,
 	//)
@@ -50,6 +51,6 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	router.POST("v1/actor/login",
 		r.actorRequestHandler.LoginActor)
 
-	//router.GET("v1/actor/logout",
-	//	r.actorRequestHandler.LogoutActor)
+	router.GET("v1/actor/logout",
+		r.actorRequestHandler.LogoutActor)
 }
