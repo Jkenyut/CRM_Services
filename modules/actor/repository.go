@@ -19,9 +19,8 @@ type RepositoryActorInterface interface {
 	GetCountRowsActor(ctx context.Context, actorRepository *model.Actor) (int, error)
 	UpdateActorById(ctx context.Context, id uint64, updateActor RequestUpdateActor) (int, error)
 	DeleteActorById(ctx context.Context, id uint64) (int, error)
-	//ActivateActorById(ctx *context.Context, id uint) (int, error)
-	//DeactivateActorById(ctx *context.Context, id uint) (int, error)
-
+	ActivateActorById(ctx context.Context, id uint64) (int, error)
+	DeactivateActorById(ctx context.Context, id uint64) (int, error)
 	LoginActor(ctx context.Context, req RequestActor, actorRepository *model.Actor) (int, error)
 }
 
@@ -192,53 +191,40 @@ func (repo Actor) DeleteActorById(ctx context.Context, id uint64) (int, error) {
 	return http.StatusOK, nil
 }
 
-//
-//func (repo Actor) ActivateActorById(id uint) error {
-//	var actor model.Actor
-//	var register model.RegisterApproval
-//
-//	err := repo.db.First(&actor, "id = ?", id).Error
-//	if err != nil {
-//		return errors.New("actor not found")
-//	}
-//
-//	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "activate").Error
-//	if err != nil {
-//		return errors.New("activate failed")
-//	}
-//
-//	err = repo.db.Model(&actor).Updates(model.Actor{Verified: "true", Active: "true"}).Error
-//	if err != nil {
-//		return errors.New("activate failed")
-//	}
-//
-//	return nil
-//}
-//
-//func (repo Actor) DeactivateActorById(id uint) error {
-//	var actor model.Actor
-//	var register model.RegisterApproval
-//	if id == 1 {
-//		return errors.New("actor is super admin can't deactivate")
-//	}
-//
-//	err := repo.db.First(&actor, "id = ?", id).Error
-//	if err != nil {
-//		return errors.New("actor not found")
-//	}
-//
-//	err = repo.db.Model(&register).Where("id = ?", id).Update("status", "deactivate").Error
-//	if err != nil {
-//		return errors.New("deactivate failed")
-//	}
-//
-//	err = repo.db.Model(&actor).Updates(model.Actor{Verified: "false", Active: "false"}).Error
-//	if err != nil {
-//		return errors.New("deactivate failed")
-//	}
-//
-//	return nil
-//}
+func (repo Actor) ActivateActorById(ctx context.Context, id uint64) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	queryActivateActorById := "update actors set active='true' where id=?"
+	result := repo.db.WithContext(ctx).Exec(queryActivateActorById, id)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query ActivateActorById")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("actor is not found,update unacceptable")
+	}
+	return http.StatusOK, nil
+}
+
+func (repo Actor) DeactivateActorById(ctx context.Context, id uint64) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	queryDeactivateActorById := "update actors set verified='true' where id=?"
+	result := repo.db.WithContext(ctx).Exec(queryDeactivateActorById, id)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query DeactivateActorById")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("actor is not found,update unacceptable")
+	}
+	return http.StatusOK, nil
+
+}
 
 func (repo Actor) LoginActor(ctx context.Context, req RequestActor, actorRepository *model.Actor) (int, error) {
 	var cancel context.CancelFunc

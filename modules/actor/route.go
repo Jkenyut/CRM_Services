@@ -39,14 +39,14 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	actorRouter.PUT("/:id",
 		r.actorRequestHandler.UpdateActorById,
 	)
-	//actorRouter.DELETE("/:id",
-	//	r.actorRequestHandler.DeleteActorById,
-	//)
-	//actorRouter.GET("/:id/activate",
-	//	r.actorRequestHandler.ActivateActorById)
-	//
-	//actorRouter.GET("/:id/deactivate",
-	//	r.actorRequestHandler.DeactivateActorById)
+	actorRouter.DELETE("/:id",
+		r.actorRequestHandler.DeleteActorById,
+	)
+	actorRouter.GET("/:id/activate",
+		r.actorRequestHandler.ActivateActorById)
+
+	actorRouter.GET("/:id/deactivate",
+		r.actorRequestHandler.DeactivateActorById)
 
 	router.POST("v1/actor/login",
 		r.actorRequestHandler.LoginActor)

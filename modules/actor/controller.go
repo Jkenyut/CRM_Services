@@ -3,13 +3,13 @@ package actor
 import (
 	"context"
 	"crm_service/dto"
+	"crm_service/middleware"
 	"crm_service/model"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"math"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -19,8 +19,8 @@ type ControllerActorInterface interface {
 	GetAllActor(ctx context.Context, page uint64, username string) (dto.DefaultResponse, int, dto.DefaultResponse)
 	UpdateActorById(ctx context.Context, id uint64, req RequestUpdateActor) (dto.DefaultResponse, int, dto.DefaultResponse)
 	DeleteActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse)
-	//ActivateActorById(id uint) (dto.ResponseMeta, error)
-	//DeactivateActorById(id uint) (dto.ResponseMeta, error)
+	ActivateActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse)
+	DeactivateActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse)
 
 	LoginActor(ctx context.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse)
 }
@@ -135,7 +135,7 @@ func (c actorControllerStruct) UpdateActorById(ctx context.Context, id uint64, r
 		return response, status, errorMessage
 	}
 
-	//get data by id
+	//repo
 	status, err = c.actorRepository.GetActorById(ctx, id, &actorRepo)
 	if err != nil {
 		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
@@ -149,38 +149,55 @@ func (c actorControllerStruct) UpdateActorById(ctx context.Context, id uint64, r
 func (c actorControllerStruct) DeleteActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse) {
 	var response dto.DefaultResponse
 	var errorMessage dto.DefaultResponse
+	//check authorization
+	if id == 1 {
+		errorMessage = dto.DefaultErrorResponseWithMessage("not authorization delete", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//repo
 	status, err := c.actorRepository.DeleteActorById(ctx, id)
 	if err != nil {
 		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
 		return response, status, errorMessage
 	}
-
-	response = dto.DefaultSuccessResponseWithMessage("delete actor", status, "")
+	response = dto.DefaultSuccessResponseWithMessage("delete actor", status, "true")
 	return response, status, errorMessage
 }
 
-//
-//func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
-//	start := time.Now()
-//	err := c.actorUseCase.ActivateActorById(id)
-//	res := dto.ResponseMeta{
-//		Success:      true,
-//		Message:      "Success activate actor",
-//		ResponseTime: fmt.Sprint(time.Since(start)),
-//	}
-//	return res, err
-//}
-//
-//func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, error) {
-//	start := time.Now()
-//	err := c.actorUseCase.DeactivateActorById(id)
-//	res := dto.ResponseMeta{
-//		Success:      true,
-//		Message:      "Success deactivate actor",
-//		ResponseTime: fmt.Sprint(time.Since(start)),
-//	}
-//	return res, err
-//}
+func (c actorControllerStruct) ActivateActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+
+	//repo
+	status, err := c.actorRepository.ActivateActorById(ctx, id)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = dto.DefaultSuccessResponseWithMessage("delete actor", status, "true")
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) DeactivateActorById(ctx context.Context, id uint64) (dto.DefaultResponse, int, dto.DefaultResponse) {
+	var response dto.DefaultResponse
+	var errorMessage dto.DefaultResponse
+	//check authorization
+	if id == 1 {
+		errorMessage = dto.DefaultErrorResponseWithMessage("not authorization deactivate", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//repo
+	status, err := c.actorRepository.DeactivateActorById(ctx, id)
+	if err != nil {
+		errorMessage = dto.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+	response = dto.DefaultSuccessResponseWithMessage("delete actor", status, "true")
+	return response, status, errorMessage
+}
 
 func (c actorControllerStruct) LoginActor(ctx context.Context, req RequestActor, agent string) (dto.DefaultResponse, int, dto.DefaultResponse) {
 	var actorRepo model.Actor
@@ -206,11 +223,15 @@ func (c actorControllerStruct) LoginActor(ctx context.Context, req RequestActor,
 		return response, http.StatusForbidden, errorMessage
 	}
 
-	hour, _ := strconv.Atoi(os.Getenv("HOUR"))
-	claims := CustomClaims{Role: uint(actorRepo.RoleID), UserAgent: agent,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Duration(hour) * time.Hour).Unix(),
+	claims := middleware.CustomClaims{
+		Data: customClaimsJWT{
+			Role:      uint64(actorRepo.RoleID),
+			UserAgent: agent,
+		},
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "login",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 

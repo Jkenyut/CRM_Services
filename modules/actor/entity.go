@@ -2,7 +2,6 @@ package actor
 
 import (
 	"crm_service/model"
-	"github.com/dgrijalva/jwt-go"
 )
 
 type RequestActor struct {
@@ -27,8 +26,7 @@ type FindAllActor struct {
 	Data       []model.Actor `json:"data,omitempty"`
 }
 
-type CustomClaims struct {
-	Role      uint   `json:"role"`
-	UserAgent string `json:"user_agent"`
-	jwt.StandardClaims
+type customClaimsJWT struct {
+	Role      uint64 `json:"role,omitempty"`
+	UserAgent string `json:"user_agent,omitempty"`
 }

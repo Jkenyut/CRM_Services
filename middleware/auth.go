@@ -35,11 +35,11 @@ func Auth(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("token expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 
 		}
-		if claims.UserAgent != c.GetHeader("User-Agent") {
+		if claims.Data != c.GetHeader("User-Agent") {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 
 		}
-		c.Set("role", int(claims.Role))
+		c.Set("tokenJWT", claims)
 	} else {
 		c.JSON(http.StatusBadRequest, "signature is invalid")
 		c.Abort() // Stop execution of subsequent middleware or handlers

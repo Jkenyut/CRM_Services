@@ -28,9 +28,9 @@ var validate = validator.New()
 
 func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	// get enviroment
-	role, _ := c.Get("role")
-
-	if role != 1 {
+	setJWT, _ := c.Get("tokenJWT")
+	fmt.Println(setJWT)
+	if setJWT != 1 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
 		return
 	}
@@ -98,8 +98,8 @@ func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
-	role, _ := c.Get("role")
-	if role != 1 {
+	setJWT, _ := c.Get("setJWT")
+	if setJWT != 1 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
@@ -131,8 +131,8 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
-	role, _ := c.Get("role")
-	if role != 1 {
+	setJWT, _ := c.Get("setJWT")
+	if setJWT != 1 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
@@ -151,57 +151,47 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-//}
-//
-//func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
-//	role, _ := c.Get("role")
-//
-//	if role != 1 {
-//		c.JSON(http.StatusUnauthorized, "Not Authorization")
-//		return
-//	}
-//	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-//	res, err := h.ctr.ActivateActorById(uint(actorId))
-//	if err != nil {
-//		if err.Error() == "actor not found" {
-//			c.JSON(http.StatusNotFound, "Actor not found")
-//			return
-//
-//		} else if err.Error() == "activate failed" {
-//			c.JSON(http.StatusBadRequest, "activate failed")
-//			return
-//		} else {
-//			c.JSON(http.StatusInternalServerError, "Server error")
-//			return
-//		}
-//	}
-//	c.JSON(http.StatusOK, res)
-//}
-//
-//func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
-//	role, _ := c.Get("role")
-//	if role != 1 {
-//		c.JSON(http.StatusUnauthorized, "Not Authorization")
-//		return
-//	}
-//	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-//	res, err := h.ctr.DeactivateActorById(uint(actorId))
-//	if err != nil {
-//		if err.Error() == "actor not found" {
-//			c.JSON(http.StatusNotFound, "Actor not found")
-//			return
-//		} else if err.Error() == "actor is super admin can't deactivate" {
-//			c.JSON(http.StatusUnauthorized, "actor is super admin can't deactivate")
-//		} else if err.Error() == "deactivate failed" {
-//			c.JSON(http.StatusBadRequest, "deactivate failed")
-//			return
-//		} else {
-//			c.JSON(http.StatusInternalServerError, "Server error")
-//			return
-//		}
-//	}
-//	c.JSON(http.StatusOK, res)
-//}
+func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
+	setJWT, _ := c.Get("setJWT")
+	if setJWT != 1 {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
+		return
+	}
+	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		return
+	}
+
+	res, status, errMessage := h.ctr.ActivateActorById(c, actorId)
+	//check status
+	if status < 200 || status > 299 {
+		c.AbortWithStatusJSON(status, errMessage)
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
+	setJWT, _ := c.Get("setJWT")
+	if setJWT != 1 {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
+		return
+	}
+	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		return
+	}
+
+	res, status, errMessage := h.ctr.DeactivateActorById(c, actorId)
+	//check status
+	if status < 200 || status > 299 {
+		c.AbortWithStatusJSON(status, errMessage)
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
 
 func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 
