@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -27,21 +27,22 @@ func Auth(c *gin.Context) {
 		return []byte(os.Getenv("ACCESS_TOKEN_JWT")), nil
 	})
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("signature token is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+		c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("signature token is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 	}
 
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		data := claims.Data.(map[string]interface{})
 		if claims.ExpiresAt.Before(time.Now()) {
-			c.AbortWithStatusJSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("token expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+			c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("token expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 
 		}
-		if claims.Data != c.GetHeader("User-Agent") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+		if data["user_agent"] != c.GetHeader("User-Agent") {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 
 		}
-		c.Set("tokenJWT", claims)
+		c.Set("envJWT", data)
 	} else {
-		c.JSON(http.StatusBadRequest, "signature is invalid")
+		c.AbortWithStatusJSON(http.StatusBadRequest, "signature is invalid")
 		c.Abort() // Stop execution of subsequent middleware or handlers
 	}
 

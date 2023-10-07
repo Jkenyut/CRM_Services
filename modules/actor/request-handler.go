@@ -1,7 +1,7 @@
 package actor
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 	"crm_service/utils/helper"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -28,10 +28,11 @@ var validate = validator.New()
 
 func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	// get enviroment
-	setJWT, _ := c.Get("tokenJWT")
-	fmt.Println(setJWT)
-	if setJWT != 1 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, dto.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(map[string]interface{})
+
+	if setJWT["role"] != "1" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
 		return
 	}
 
@@ -39,7 +40,7 @@ func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	var request RequestActor
 	err := c.Bind(&request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -66,7 +67,7 @@ func (h RequestHandlerActorStruct) GetActorById(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
 		return
 	}
 	res, status, errMessage := h.ctr.GetActorById(c, id)
@@ -84,7 +85,7 @@ func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
 	username := c.DefaultQuery("username", "")
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
 		return
 	}
 
@@ -98,15 +99,17 @@ func (h RequestHandlerActorStruct) GetAllActor(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
-	setJWT, _ := c.Get("setJWT")
-	if setJWT != 1 {
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(map[string]interface{})
+
+	if setJWT["role"] != "1" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -131,14 +134,16 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
-	setJWT, _ := c.Get("setJWT")
-	if setJWT != 1 {
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(map[string]interface{})
+
+	if setJWT["role"] != "1" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -152,14 +157,16 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
-	setJWT, _ := c.Get("setJWT")
-	if setJWT != 1 {
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(map[string]interface{})
+
+	if setJWT["role"] != "1" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -173,14 +180,16 @@ func (h RequestHandlerActorStruct) ActivateActorById(c *gin.Context) {
 }
 
 func (h RequestHandlerActorStruct) DeactivateActorById(c *gin.Context) {
-	setJWT, _ := c.Get("setJWT")
-	if setJWT != 1 {
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(map[string]interface{})
+
+	if setJWT["role"] != "1" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
 		return
 	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -202,7 +211,7 @@ func (h RequestHandlerActorStruct) LoginActor(c *gin.Context) {
 	var request RequestActor
 	err := c.BindJSON(&request)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -224,5 +233,5 @@ func (h RequestHandlerActorStruct) LogoutActor(c *gin.Context) {
 	c.Request.Header.Del("Authorization")
 
 	//response
-	c.JSON(http.StatusOK, dto.DefaultSuccessResponseWithMessage("logout success", 200, true))
+	c.JSON(http.StatusOK, entity.DefaultSuccessResponseWithMessage("logout success", 200, true))
 }

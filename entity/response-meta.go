@@ -1,4 +1,4 @@
-package dto
+package entity
 
 type ResponseMeta struct {
 	Success    bool   `json:"success"`

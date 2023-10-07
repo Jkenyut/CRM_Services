@@ -28,17 +28,17 @@ func (r RouterCustomerStruct) Handle(router *gin.Engine) {
 		r.customerRequestHandler.CreateCustomer,
 	)
 
-	customerRouter.GET("/:id", middleware.CustomerBulk,
-		r.customerRequestHandler.GetCustomerById,
-	)
-	customerRouter.GET("", middleware.CustomerBulk,
-		r.customerRequestHandler.GetAllCustomer,
-	)
-
-	customerRouter.PUT("/:id",
-		r.customerRequestHandler.UpdateCustomerById,
-	)
-	customerRouter.DELETE("/:id",
-		r.customerRequestHandler.DeleteCustomerById,
-	)
+	//customerRouter.GET("/:id", middleware.CustomerBulk,
+	//	r.customerRequestHandler.GetCustomerById,
+	//)
+	//customerRouter.GET("", middleware.CustomerBulk,
+	//	r.customerRequestHandler.GetAllCustomer,
+	//)
+	//
+	//customerRouter.PUT("/:id",
+	//	r.customerRequestHandler.UpdateCustomerById,
+	//)
+	//customerRouter.DELETE("/:id",
+	//	r.customerRequestHandler.DeleteCustomerById,
+	//)
 }
