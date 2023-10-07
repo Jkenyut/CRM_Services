@@ -1,7 +1,7 @@
 package customer
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 
 	"crm_service/model"
 	"fmt"
@@ -13,7 +13,7 @@ type CustomerControllerInterface interface {
 	GetCustomerById(id uint) (FindCustomer, error)
 	GetAllCustomer(page uint, usernameStr string) (FindAllCustomer, error)
 	UpdateById(id uint, req UpdateCustomerBody) (FindCustomer, error)
-	DeleteCustomerById(id uint) (dto.ResponseMeta, error)
+	DeleteCustomerById(id uint) (entity.ResponseMeta, error)
 }
 
 type customerControllerStruct struct {
@@ -28,7 +28,7 @@ func (c customerControllerStruct) CreateCustomer(req CustomerBody) (any, error) 
 	}
 
 	res := SuccessCreate{
-		ResponseMeta: dto.ResponseMeta{
+		ResponseMeta: entity.ResponseMeta{
 			Success:      true,
 			MessageTitle: "Success create customer",
 			Message:      "Success register",
@@ -52,7 +52,7 @@ func (c customerControllerStruct) GetCustomerById(id uint) (FindCustomer, error)
 		return FindCustomer{}, err
 	}
 
-	res.ResponseMeta = dto.ResponseMeta{
+	res.ResponseMeta = entity.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success find customer",
 		Message:      "Success find",
@@ -76,7 +76,7 @@ func (c customerControllerStruct) GetAllCustomer(page uint, usernameStr string) 
 	}
 
 	res := FindAllCustomer{
-		ResponseMeta: dto.ResponseMeta{
+		ResponseMeta: entity.ResponseMeta{
 			Success:      true,
 			MessageTitle: "Success find customer",
 			Message:      "Success find all",
@@ -100,7 +100,7 @@ func (c customerControllerStruct) UpdateById(id uint, req UpdateCustomerBody) (F
 	}
 
 	res := FindCustomer{
-		ResponseMeta: dto.ResponseMeta{
+		ResponseMeta: entity.ResponseMeta{
 			Success:      true,
 			MessageTitle: "Success update customer",
 			Message:      "Success update customer",
@@ -111,10 +111,10 @@ func (c customerControllerStruct) UpdateById(id uint, req UpdateCustomerBody) (F
 	return res, nil
 }
 
-func (c customerControllerStruct) DeleteCustomerById(id uint) (dto.ResponseMeta, error) {
+func (c customerControllerStruct) DeleteCustomerById(id uint) (entity.ResponseMeta, error) {
 	start := time.Now()
 	err := c.customerUseCase.DeleteCustomerById(id)
-	res := dto.ResponseMeta{
+	res := entity.ResponseMeta{
 		Success:      true,
 		MessageTitle: "Success delete customer",
 		Message:      "Success delete customer",

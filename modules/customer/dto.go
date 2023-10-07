@@ -1,7 +1,7 @@
 package customer
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 	"crm_service/model"
 )
 
@@ -19,17 +19,17 @@ type UpdateCustomerBody struct {
 }
 
 type SuccessCreate struct {
-	dto.ResponseMeta
+	entity.ResponseMeta
 	Data CustomerBody `json:"data"`
 }
 
 type FindCustomer struct {
-	dto.ResponseMeta
+	entity.ResponseMeta
 	Data model.Customer `json:"data"`
 }
 
 type FindAllCustomer struct {
-	dto.ResponseMeta
+	entity.ResponseMeta
 	Page       uint             `json:"page,omitempty"`
 	PerPage    uint             `json:"per_page,omitempty"`
 	Total      int              `json:"total,omitempty"`

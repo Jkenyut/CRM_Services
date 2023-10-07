@@ -1,19 +1,19 @@
 package helper
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
-func ValidateData(err error) (int, dto.DefaultResponse) {
+func ValidateData(err error) (int, entity.DefaultResponse) {
 	var status = http.StatusPreconditionFailed
-	var customErr dto.DefaultResponse
+	var customErr entity.DefaultResponse
 	for _, messageError := range err.(validator.ValidationErrors) {
 		messageErr := fmt.Sprint(messageError.StructField(), " ", messageError.ActualTag(), " ", messageError.Param())
 		if messageError.Tag() != "" {
-			customErr = dto.DefaultErrorResponseWithMessage(messageErr, status)
+			customErr = entity.DefaultErrorResponseWithMessage(messageErr, status)
 			break
 		}
 	}
