@@ -34,16 +34,12 @@ func Auth(c *gin.Context) {
 		data := claims.Data.(map[string]interface{})
 		if claims.ExpiresAt.Before(time.Now()) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("token expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-
 		}
 		if data["user_agent"] != c.GetHeader("User-Agent") {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 
 		}
 		c.Set("envJWT", data)
-	} else {
-		c.AbortWithStatusJSON(http.StatusBadRequest, "signature is invalid")
-		c.Abort() // Stop execution of subsequent middleware or handlers
 	}
 
 	c.Next()
