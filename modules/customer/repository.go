@@ -1,17 +1,23 @@
 package customer
 
 import (
+	"context"
 	"crm_service/model"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
+	"net/http"
+	"time"
 )
 
 type CustomerRepoInterface interface {
-	CreateCustomer(customer *model.Customer) (model.Customer, error)
-	//GetCustomerById(id uint) (model.Customer, error)
-	//GetAllCustomer(page uint, username string) (uint, uint, int, uint, []model.Customer, error)
-	//UpdateCustomerById(id uint, customer *model.Customer) (model.Customer, error)
-	//DeleteCustomerById(id uint) error
+	CreateCustomer(ctx context.Context, req RequestCustomer) (int, error)
+	GetCustomerByEmail(ctx context.Context, req RequestCustomer, customerRepository *model.Customer) (int, error)
+	GetCustomerById(ctx context.Context, id uint64, customerRepository *model.Customer) (int, error)
+	GetAllCustomer(ctx context.Context, page uint64, limit uint64, req RequestGetAllCustomer, customerRepository *[]model.Customer) (int, error)
+	GetCountRowsCustomer(ctx context.Context, customerRepository *model.Customer) (int, error)
+	UpdateCustomerById(ctx context.Context, id uint64, customerRepository RequestUpdateCustomer) (int, error)
+	DeleteCustomerById(ctx context.Context, id uint64) (int, error)
 }
 
 type Customer struct {
@@ -25,91 +31,135 @@ func NewCustomer(dbCrud *gorm.DB) Customer {
 
 }
 
-func (repo Customer) CreateCustomer(customer *model.Customer) (model.Customer, error) {
-	var existingCustomer model.Customer
+func (repo Customer) CreateCustomer(ctx context.Context, req RequestCustomer) (int, error) {
+	//timeout
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+	//query
+	queryCreateCustomer := "INSERT INTO customer(first_name, last_name, email, avatar)  SELECT ?,?,?,? WHERE NOT EXISTS (SELECT email from customer where email=?)"
+	result := repo.db.WithContext(ctx).Exec(queryCreateCustomer, req.FirstName, req.LastName, req.Email, req.Avatar, req.Email)
 
-	err := repo.db.First(&existingCustomer, "email = ?", customer.Email).Error
-	if err == nil {
-		// FirstName already exists, return an error
-		return model.Customer{}, errors.New("email already taken")
+	//check
+	if result.Error != nil {
+		return http.StatusInternalServerError, errors.New("failed exec query create customer")
+	} else if result.RowsAffected == 0 {
+		// Username does not exist, proceed with creating the customer
+		return http.StatusInternalServerError, errors.New("username already exists")
 	}
 
-	// FirstName does not exist, proceed with creating the customer
-	err = repo.db.Create(customer).Error
-	if err != nil {
-		return model.Customer{}, err
-	}
-	return *customer, nil
+	//return
+	return http.StatusCreated, nil
 }
 
-func (repo Customer) GetCustomerById(id uint) (model.Customer, error) {
-	var customer model.Customer
-	err := repo.db.Omit("password").First(&customer, "id = ?", id).Error
-	if err != nil {
-		return model.Customer{}, errors.New("customer not found")
+func (repo Customer) GetCustomerByEmail(ctx context.Context, req RequestCustomer, customerRepository *model.Customer) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	//query
+	querySelectCustomer := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where email=?"
+	result := repo.db.WithContext(ctx).Raw(querySelectCustomer, req.Email).Scan(&customerRepository)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("customer not found")
 	}
-	return customer, nil
+
+	return http.StatusOK, nil
 }
 
-//
-//func (repo Customer) GetAllCustomer(page uint, username string) (uint, uint, int, uint, []model.Customer, error) {
-//	var customers []model.Customer
-//	var count int64
-//	var limit uint = 20
-//	var offset = limit * (page - 1)
-//	result := repo.db.Model(&model.Customer{}).Count(&count)
-//	if result.Error != nil {
-//		// Handle the error
-//		return 0, 0, 0, 0, nil, result.Error
-//	}
-//	totalPages := uint(math.Ceil(float64(count) / float64(limit)))
-//	name := fmt.Sprintf("%%%s%%", username)
-//
-//	err := repo.db.Select("*").
-//		Table("customer").
-//		Select("*").
-//		Where("CONCAT(first_name, ' ', last_name) LIKE ?", name).
-//		Limit(int(limit)).
-//		Offset(int(offset)).
-//		Find(&customers).
-//		Error
-//	if err != nil {
-//		return 0, 0, 0, 0, nil, err
-//	}
-//	return page, limit, int(count), totalPages, customers, nil
-//}
-//
-//func (repo Customer) UpdateCustomerById(id uint, updateCustomer *model.Customer) (model.Customer, error) {
-//	var findCustomerById model.Customer
-//
-//	err := repo.db.First(&findCustomerById, "id = ?", id).Error
-//	if err != nil {
-//		return model.Customer{}, errors.New("customer not found")
-//	}
-//
-//	err = repo.db.Model(&model.Customer{}).Where("id = ?", id).Updates(updateCustomer).Error
-//	if err != nil {
-//		return model.Customer{}, errors.New("failed to update customer")
-//	}
-//
-//	err = repo.db.First(&findCustomerById, "id = ?", id).Error
-//	if err != nil {
-//		return model.Customer{}, errors.New("customer not found")
-//	}
-//
-//	return findCustomerById, nil
-//}
-//
-//func (repo Customer) DeleteCustomerById(id uint) error {
-//	var customer model.Customer
-//
-//	err := repo.db.First(&customer, "id = ?", id).Error
-//	if err != nil {
-//		return errors.New("customer not found")
-//	}
-//	err = repo.db.Delete(&customer, "id = ?", id).Error
-//	if err != nil {
-//		return errors.New("failed deleted")
-//	}
-//	return nil
-//}
+func (repo Customer) GetCustomerById(ctx context.Context, id uint64, customerRepository *model.Customer) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	//query
+	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where id=?"
+	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById, id).Scan(&customerRepository)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("customer not found")
+	}
+
+	return http.StatusOK, nil
+}
+
+func (repo Customer) GetAllCustomer(ctx context.Context, page uint64, limit uint64, req RequestGetAllCustomer, customerRepository *[]model.Customer) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	//page
+	startID := (page - 1) * limit
+
+	//query
+	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where id > ? AND first_name like ? AND last_name like ? limit ?"
+	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById, startID, fmt.Sprint(req.FirstName, "%"), fmt.Sprint(req.LastName, "%"), limit).Scan(&customerRepository)
+
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query all customer")
+	}
+
+	return http.StatusOK, nil
+}
+func (repo Customer) GetCountRowsCustomer(ctx context.Context, customerRepository *model.Customer) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	//query
+	queryGetCustomerById := "select count(id) as total from customer"
+	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById).Scan(&customerRepository)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("count customer not found")
+	}
+
+	return http.StatusOK, nil
+}
+
+func (repo Customer) UpdateCustomerById(ctx context.Context, id uint64, updateCustomer RequestUpdateCustomer) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	//query
+	queryUpdateCustomerById := "update customer set  first_name=?,last_name=?,avatar=? WHERE id=?"
+	result := repo.db.WithContext(ctx).Exec(queryUpdateCustomerById, updateCustomer.FirstName, updateCustomer.LastName, updateCustomer.Avatar, id)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query UpdateCustomerById")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("cannot update because username already exist")
+	}
+
+	return http.StatusOK, nil
+}
+
+func (repo Customer) DeleteCustomerById(ctx context.Context, id uint64) (int, error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
+	defer cancel()
+
+	queryDeleteCustomerById := "delete from customer where id =?"
+	result := repo.db.WithContext(ctx).Exec(queryDeleteCustomerById, id)
+	if result.Error != nil {
+		//error mysql
+		return http.StatusInternalServerError, errors.New("failed exec query DeleteCustomerById")
+	} else if result.RowsAffected == 0 {
+		// return if not found
+		return http.StatusNotFound, errors.New("customer is not found,delete unacceptable")
+	}
+	return http.StatusOK, nil
+}

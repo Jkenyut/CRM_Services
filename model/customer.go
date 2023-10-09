@@ -3,13 +3,14 @@ package model
 import "time"
 
 type Customer struct {
-	ID        uint      `gorm:"column:id; primaryKey; autoIncrement"`
-	FirstName string    `gorm:"column:first_name; index:idx_first_name;size=255"`
-	LastName  string    `gorm:"column:last_name; index:idx_last_name;size=255"`
-	Email     string    `gorm:"column:email; uniqueIndex"`
-	Avatar    string    `gorm:"column:avatar;size:255"`
-	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;default:current_timestamp"`
-	UpdatedAt time.Time `gorm:"column:updated_at;type:timestamp;default:current_timestamp;autoUpdateTime"`
+	ID        uint      `json:"ID,omitempty" gorm:"column:id; primaryKey; autoIncrement"`
+	FirstName string    `json:"firstname ,omitempty" gorm:"column:first_name; index:idx_first_name;size=255"`
+	LastName  string    `json:"lastname ,omitempty" gorm:"column:last_name; index:idx_last_name;size=255"`
+	Email     string    `json:"email ,omitempty" gorm:"column:email; uniqueIndex"`
+	Avatar    string    `json:"avatar ,omitempty" gorm:"column:avatar;size:255"`
+	CreatedAt time.Time `json:"createdAt,omitempty" gorm:"column:created_at;type:timestamp;default:current_timestamp"`
+	UpdatedAt time.Time `json:"updatedAt ,omitempty" gorm:"column:updated_at;type:timestamp;default:current_timestamp;autoUpdateTime"`
+	Total     uint64    `json:"total ,omitempty" gorm:"column:total" json:"total,omitempty"`
 }
 
 func (Customer) TableName() string {

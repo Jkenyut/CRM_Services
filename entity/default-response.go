@@ -1,8 +1,9 @@
 package entity
 
 import (
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"strconv"
-	"strings"
 )
 
 type DefaultResponse struct {
@@ -14,7 +15,7 @@ func DefaultErrorResponseWithMessage(msg string, status int) DefaultResponse {
 	return DefaultResponse{
 		Message: ResponseMeta{
 			Success:    false,
-			Message:    strings.Title(msg),
+			Message:    cases.Title(language.Und, cases.NoLower).String(msg),
 			StatusCode: strconv.Itoa(status),
 		},
 	}
@@ -24,7 +25,7 @@ func DefaultSuccessResponseWithMessage(msg string, status int, data any) Default
 	return DefaultResponse{
 		Message: ResponseMeta{
 			Success:    true,
-			Message:    strings.Title(msg),
+			Message:    cases.Title(language.Und, cases.NoLower).String(msg),
 			StatusCode: strconv.Itoa(status),
 		},
 		Data: data,

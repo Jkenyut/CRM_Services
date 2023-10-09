@@ -40,7 +40,7 @@ func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	var request RequestActor
 	err := c.Bind(&request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -109,7 +109,7 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -143,7 +143,7 @@ func (h RequestHandlerActorStruct) DeleteActorById(c *gin.Context) {
 	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
