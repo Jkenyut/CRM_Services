@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 04, 2023 at 07:58 AM
+-- Generation Time: Oct 09, 2023 at 02:57 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `crm_service`
+-- Database: `crm_bootcamp`
 --
 
 -- --------------------------------------------------------
@@ -47,7 +47,18 @@ INSERT INTO `actors` (`id`, `username`, `password`, `role_id`, `verified`, `acti
 (3, 'be', '$2a$12$LLGqut.2ghWEIq7KbqmBgexbC6tys1S52GE7dqghRx/Bn8cvaen2u', 2, 'true', 'true', '2023-06-02 07:33:07', '2023-06-03 09:39:09'),
 (4, 'se', '$2a$12$3Cmx2UK/HVCp1kg0z2yLL.V3DcMN/BoBN4jYhjf1I4J3gOHlARDe6', 2, 'false', 'false', '2023-06-02 11:07:55', '2023-06-03 09:17:29'),
 (6, 's', '$2a$12$jHCAyoN6vT9yyDSzagl6BOl0MbgdICn1fz1GqW3dRlNuhZvegjDvO', 2, 'false', 'false', '2023-06-02 11:12:35', '2023-06-02 11:12:35'),
-(9, 'd', '$2a$12$o5HvC9FBOTQ7Yc/Eyac2HOR36JGnWUMIwipK2YfV6pG25UVK2/v.e', 2, 'false', 'false', '2023-06-04 07:16:11', '2023-06-04 07:16:11');
+(9, 'd', '$2a$12$o5HvC9FBOTQ7Yc/Eyac2HOR36JGnWUMIwipK2YfV6pG25UVK2/v.e', 2, 'false', 'false', '2023-06-04 07:16:11', '2023-06-04 07:16:11'),
+(17, 'hi', 'hai', 2, 'false', 'false', '2023-10-06 02:47:48', '2023-10-06 02:47:48'),
+(18, 'h0', 'hai', 2, 'false', 'false', '2023-10-06 02:49:19', '2023-10-06 02:49:19'),
+(19, 'hai', 'hai', 2, 'false', 'false', '2023-10-06 06:21:35', '2023-10-06 06:21:35'),
+(21, 'ence', 'k', 2, 'false', 'false', '2023-10-06 06:25:25', '2023-10-06 06:29:05'),
+(25, 'ka', 'ejcnec', 2, 'false', 'false', '2023-10-06 06:28:44', '2023-10-06 06:28:44'),
+(28, 'en', 'ejcnec', 2, 'false', 'false', '2023-10-06 06:29:38', '2023-10-06 06:29:54'),
+(30, 'j', 'ejcnec', 2, 'false', 'false', '2023-10-06 06:30:05', '2023-10-06 06:30:05'),
+(36, 'hahaha', 'k', 2, 'false', 'false', '2023-10-06 06:31:28', '2023-10-06 06:31:28'),
+(38, 'hahah', 'k', 2, 'false', 'false', '2023-10-06 06:31:50', '2023-10-06 06:31:50'),
+(39, 'w', 'hai', 2, 'true', 'false', '2023-10-06 06:32:25', '2023-10-06 08:22:37'),
+(41, 'h', 'h', 2, 'false', 'false', '2023-10-06 18:20:10', '2023-10-06 18:20:10');
 
 -- --------------------------------------------------------
 
@@ -89,12 +100,12 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id`, `first_name`, `last_name`, `email`, `avatar`, `created_at`, `updated_at`) VALUES
-(5, 'Michael', 'Lawson', 'michael.lawson@reqres.in', 'https://reqres.in/img/faces/7-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
-(6, 'Lindsay', 'Ferguson', 'lindsay.ferguson@reqres.in', 'https://reqres.in/img/faces/8-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
-(7, 'Tobias', 'Funke', 'tobias.funke@reqres.in', 'https://reqres.in/img/faces/9-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
-(8, 'Byron', 'Fields', 'byron.fields@reqres.in', 'https://reqres.in/img/faces/10-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
-(9, 'George', 'Edwards', 'george.edwards@reqres.in', 'https://reqres.in/img/faces/11-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19'),
-(10, 'Rachel', 'Howell', 'rachel.howell@reqres.in', 'https://reqres.in/img/faces/12-image.jpg', '2023-06-04 03:55:19', '2023-06-04 03:55:19');
+(17, 'Michael', 'Lawson', 'michael.lawson@reqres.in', 'https://reqres.in/img/faces/7-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42'),
+(18, 'Lindsay', 'Ferguson', 'lindsay.ferguson@reqres.in', 'https://reqres.in/img/faces/8-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42'),
+(19, 'Tobias', 'Funke', 'tobias.funke@reqres.in', 'https://reqres.in/img/faces/9-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42'),
+(20, 'Byron', 'Fields', 'byron.fields@reqres.in', 'https://reqres.in/img/faces/10-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42'),
+(21, 'George', 'Edwards', 'george.edwards@reqres.in', 'https://reqres.in/img/faces/11-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42'),
+(22, 'Rachel', 'Howell', 'rachel.howell@reqres.in', 'https://reqres.in/img/faces/12-image.jpg', '2023-10-09 02:35:42', '2023-10-09 02:35:42');
 
 -- --------------------------------------------------------
 
@@ -105,19 +116,18 @@ INSERT INTO `customer` (`id`, `first_name`, `last_name`, `email`, `avatar`, `cre
 CREATE TABLE `register_approval` (
   `id` bigint UNSIGNED NOT NULL,
   `admin_id` bigint UNSIGNED DEFAULT NULL,
-  `super_admin_id` bigint UNSIGNED DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL
+  `status` varchar(255) DEFAULT 'deactivate'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `register_approval`
 --
 
-INSERT INTO `register_approval` (`id`, `admin_id`, `super_admin_id`, `status`) VALUES
-(3, 3, 1, 'activate'),
-(4, 4, 1, 'deactivate'),
-(5, 6, 1, 'deactivate'),
-(8, 9, 1, 'deactivate');
+INSERT INTO `register_approval` (`id`, `admin_id`, `status`) VALUES
+(3, 3, 'activate'),
+(4, 4, 'deactivate'),
+(5, 6, 'deactivate'),
+(8, 9, 'deactivate');
 
 --
 -- Indexes for dumped tables
@@ -154,8 +164,7 @@ ALTER TABLE `customer`
 --
 ALTER TABLE `register_approval`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `register_admin_actor_role` (`admin_id`),
-  ADD KEY `register_superadmin_actor_role` (`super_admin_id`);
+  ADD KEY `register_admin_actor_role` (`admin_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -165,7 +174,7 @@ ALTER TABLE `register_approval`
 -- AUTO_INCREMENT for table `actors`
 --
 ALTER TABLE `actors`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `actor_role`
@@ -177,13 +186,13 @@ ALTER TABLE `actor_role`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `register_approval`
 --
 ALTER TABLE `register_approval`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
@@ -199,8 +208,7 @@ ALTER TABLE `actors`
 -- Constraints for table `register_approval`
 --
 ALTER TABLE `register_approval`
-  ADD CONSTRAINT `register_admin_actor_role` FOREIGN KEY (`admin_id`) REFERENCES `actors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `register_superadmin_actor_role` FOREIGN KEY (`super_admin_id`) REFERENCES `actors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `register_admin_actor_role` FOREIGN KEY (`admin_id`) REFERENCES `actors` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

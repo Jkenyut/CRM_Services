@@ -24,7 +24,7 @@ func (r RouterActorStruct) Handle(router *gin.Engine) {
 	basepath := "v1/actor"
 
 	actorRouter := router.Group(basepath, middleware.Auth)
-
+	//
 	actorRouter.POST("/register",
 		r.actorRequestHandler.CreateActor,
 	)

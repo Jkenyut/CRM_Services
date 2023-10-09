@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"crm_service/dto"
+	"crm_service/entity"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -11,7 +11,6 @@ import (
 )
 
 func Auth(c *gin.Context) {
-
 	bearer := c.GetHeader("Authorization")
 	tokenAuth := strings.Split(bearer, " ")
 
@@ -28,28 +27,23 @@ func Auth(c *gin.Context) {
 		return []byte(os.Getenv("ACCESS_TOKEN_JWT")), nil
 	})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature token is invalid"))
-		c.Abort() // Stop execution of subsequent middleware or handlers
-		return
+		c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("signature token is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
 	}
 
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-
+		data := claims.Data.(map[string]interface{})
 		if claims.ExpiresAt.Before(time.Now()) {
-			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("token expired"))
-			c.Abort() // Stop execution of subsequent middleware or handlers
-			return
+			c.AbortWithStatusJSON(http.StatusBadRequest, entity.DefaultErrorResponseWithMessage("token expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+
 		}
-		if claims.UserAgent != c.GetHeader("User-Agent") {
-			c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature agent is invalid"))
-			c.Abort() // Stop execution of subsequent middleware or handlers
-			return
+		if data["user_agent"] != c.GetHeader("User-Agent") {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, entity.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+
 		}
-		c.Set("role", claims.Role)
+		c.Set("envJWT", data)
 	} else {
-		c.JSON(http.StatusBadRequest, dto.DefaultErrorResponseWithMessage("signature is invalid"))
+		c.AbortWithStatusJSON(http.StatusBadRequest, "signature is invalid")
 		c.Abort() // Stop execution of subsequent middleware or handlers
-		return
 	}
 
 	c.Next()

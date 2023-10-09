@@ -1,16 +1,15 @@
 package db
 
 import (
-	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 )
 
 func GormMysql() *gorm.DB {
-	dsn := fmt.Sprint("root@tcp(", os.Getenv("CONNECT_DB"), ")/crm_bootcamp?charset=utf8mb4&parseTime=True&loc=Local")
-	fmt.Println(dsn)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := os.Getenv("CONNECT_DB")
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		panic("Failed to connect to the database: " + err.Error())
 	}

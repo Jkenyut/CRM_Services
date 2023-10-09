@@ -1,167 +1,238 @@
 package actor
 
 import (
-	"crm_service/dto"
+	"context"
 	"crm_service/entity"
-	"errors"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"crm_service/middleware"
+	"crm_service/model"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
+	"math"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 )
 
-type ActorControllerInterface interface {
-	CreateActor(req ActorBody) (any, error)
-	GetActorById(id uint) (FindActor, error)
-	GetAllActor(page uint, usernameStr string) (FindAllActor, error)
-	UpdateById(id uint, req UpdateActorBody) (FindActor, error)
-	DeleteActorById(id uint) (dto.ResponseMeta, error)
-	ActivateActorById(id uint) (dto.ResponseMeta, error)
-	DeactivateActorById(id uint) (dto.ResponseMeta, error)
-	LoginActor(req ActorBody, agent string) (SuccessLogin, error)
+type ControllerActorInterface interface {
+	CreateActor(ctx context.Context, req RequestActor) (entity.DefaultResponse, int, entity.DefaultResponse)
+	GetActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse)
+	GetAllActor(ctx context.Context, page uint64, username string) (entity.DefaultResponse, int, entity.DefaultResponse)
+	UpdateActorById(ctx context.Context, id uint64, req RequestUpdateActor) (entity.DefaultResponse, int, entity.DefaultResponse)
+	DeleteActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse)
+	ActivateActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse)
+	DeactivateActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse)
+
+	LoginActor(ctx context.Context, req RequestActor, agent string) (entity.DefaultResponse, int, entity.DefaultResponse)
 }
 
 type actorControllerStruct struct {
-	actorUseCase UseCaseActorInterface
+	actorRepository RepositoryActorInterface
 }
 
-func (c actorControllerStruct) CreateActor(req ActorBody) (any, error) {
-	start := time.Now()
-	actor, err := c.actorUseCase.CreateActor(req)
-	if err != nil {
-		return SuccessCreate{}, err
+func (c actorControllerStruct) CreateActor(ctx context.Context, req RequestActor) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var actorRepo model.Actor
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+
+	//hashing password
+	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
+	reqActor := RequestActor{
+		Username: req.Username,
+		Password: string(hashingPassword),
 	}
 
-	res := SuccessCreate{
-		ResponseMeta: dto.ResponseMeta{
-			Success:      true,
-			MessageTitle: "Success create actor",
-			Message:      "Success register",
-			ResponseTime: fmt.Sprint(time.Since(start)),
-		},
-		Data: ActorBody{
-			Username: actor.Username,
-		},
+	// create actor
+	status, err := c.actorRepository.CreateActor(ctx, reqActor)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
 	}
-	return res, nil
+
+	//get data
+	status, err = c.actorRepository.GetActorByUsername(ctx, reqActor, &actorRepo)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	//req approval
+	reqApproval := RequestApproval{
+		ID: actorRepo.ID,
+	}
+
+	//create approval
+	status, err = c.actorRepository.CreateApproval(ctx, &reqApproval)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = entity.DefaultSuccessResponseWithMessage("actor created", status, actorRepo)
+	return response, status, errorMessage
 }
 
-func (c actorControllerStruct) GetActorById(id uint) (FindActor, error) {
-	start := time.Now()
-	var res FindActor
-	actor, err := c.actorUseCase.GetActorById(id)
-	if err != nil {
-		return FindActor{}, err
-	}
+func (c actorControllerStruct) GetActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var actorRepo model.Actor
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
 
-	res.ResponseMeta = dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success find actor",
-		Message:      "Success find",
-		ResponseTime: fmt.Sprint(time.Since(start)),
+	//get data by id
+	status, err := c.actorRepository.GetActorById(ctx, id, &actorRepo)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
 	}
-	res.Data = actor
-	return res, nil
+	response = entity.DefaultSuccessResponseWithMessage("Get actor", status, actorRepo)
+	return response, status, errorMessage
 }
 
-func (c actorControllerStruct) GetAllActor(page uint, usernameStr string) (FindAllActor, error) {
-	start := time.Now()
-	page, perPage, total, totalPages, actorEntities, err := c.actorUseCase.GetAllActor(page, usernameStr)
+func (c actorControllerStruct) GetAllActor(ctx context.Context, page uint64, username string) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var actorRepo []model.Actor
+	var actorCountRepo model.Actor
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
 
+	var limit uint64 = 30
+	status, err := c.actorRepository.GetCountRowsActor(ctx, &actorCountRepo)
 	if err != nil {
-		return FindAllActor{}, err
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
 	}
 
-	data := make([]entity.Actor, len(actorEntities))
-	for i, actorEntity := range actorEntities {
-		data[i] = actorEntity
+	status, err = c.actorRepository.GetAllActor(ctx, page, limit, username, &actorRepo)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
 	}
 
-	res := FindAllActor{
-		ResponseMeta: dto.ResponseMeta{
-			Success:      true,
-			MessageTitle: "Success find actor",
-			Message:      "Success find all",
-			ResponseTime: fmt.Sprint(time.Since(start)),
-		},
+	resMessage := FindAllActor{
 		Page:       page,
-		PerPage:    perPage,
-		Total:      total,
-		TotalPages: totalPages,
-		Data:       data,
+		PerPage:    uint64(len(actorRepo)),
+		TotalPages: uint64(math.Ceil(float64(actorCountRepo.Total) / float64(limit))),
+		Data:       actorRepo,
 	}
 
-	return res, nil
+	response = entity.DefaultSuccessResponseWithMessage("Get all actor", status, resMessage)
+
+	return response, status, errorMessage
 }
 
-func (c actorControllerStruct) UpdateById(id uint, req UpdateActorBody) (FindActor, error) {
-	start := time.Now()
-	actor, err := c.actorUseCase.UpdateActorById(id, req)
-	if err != nil {
-		return FindActor{}, err
+func (c actorControllerStruct) UpdateActorById(ctx context.Context, id uint64, req RequestUpdateActor) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var actorRepo model.Actor
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+
+	//check authorization
+	if id == 1 {
+		errorMessage = entity.DefaultErrorResponseWithMessage("not authorization update", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
 	}
 
-	res := FindActor{
-		ResponseMeta: dto.ResponseMeta{
-			Success:      true,
-			MessageTitle: "Success update actor",
-			Message:      "Success update actor",
-			ResponseTime: fmt.Sprint(time.Since(start)),
+	//update data by id
+	status, err := c.actorRepository.UpdateActorById(ctx, id, req)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	//repo
+	status, err = c.actorRepository.GetActorById(ctx, id, &actorRepo)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = entity.DefaultSuccessResponseWithMessage("Get actor", status, actorRepo)
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) DeleteActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+	//check authorization
+	if id == 1 {
+		errorMessage = entity.DefaultErrorResponseWithMessage("not authorization delete", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//repo
+	status, err := c.actorRepository.DeleteActorById(ctx, id)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+	response = entity.DefaultSuccessResponseWithMessage("delete actor", status, "true")
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) ActivateActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+
+	//repo
+	status, err := c.actorRepository.ActivateActorById(ctx, id)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	response = entity.DefaultSuccessResponseWithMessage("delete actor", status, "true")
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) DeactivateActorById(ctx context.Context, id uint64) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+	//check authorization
+	if id == 1 {
+		errorMessage = entity.DefaultErrorResponseWithMessage("not authorization deactivate", http.StatusUnauthorized)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//repo
+	status, err := c.actorRepository.DeactivateActorById(ctx, id)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+	response = entity.DefaultSuccessResponseWithMessage("delete actor", status, "true")
+	return response, status, errorMessage
+}
+
+func (c actorControllerStruct) LoginActor(ctx context.Context, req RequestActor, agent string) (entity.DefaultResponse, int, entity.DefaultResponse) {
+	var actorRepo model.Actor
+	var response entity.DefaultResponse
+	var errorMessage entity.DefaultResponse
+
+	status, err := c.actorRepository.LoginActor(ctx, req, &actorRepo)
+	if err != nil {
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, status, errorMessage
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(actorRepo.Password), []byte(req.Password))
+	if err != nil {
+		// invalid password
+		errorMessage = entity.DefaultErrorResponseWithMessage("invalid username & password", status)
+		return response, http.StatusUnauthorized, errorMessage
+	}
+
+	//check access
+	if actorRepo.Verified != "true" && actorRepo.Active != "true" {
+		errorMessage = entity.DefaultErrorResponseWithMessage("account not activated", status)
+		return response, http.StatusForbidden, errorMessage
+	}
+
+	claims := middleware.CustomClaims{
+		Data: customClaimsJWT{
+			Role:      strconv.Itoa(int(actorRepo.RoleID)),
+			UserAgent: agent,
 		},
-		Data: actor,
-	}
-	return res, nil
-}
-
-func (c actorControllerStruct) DeleteActorById(id uint) (dto.ResponseMeta, error) {
-	start := time.Now()
-	err := c.actorUseCase.DeleteActorById(id)
-	res := dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success delete actor",
-		Message:      "Success delete actor",
-		ResponseTime: fmt.Sprint(time.Since(start)),
-	}
-	return res, err
-}
-
-func (c actorControllerStruct) ActivateActorById(id uint) (dto.ResponseMeta, error) {
-	start := time.Now()
-	err := c.actorUseCase.ActivateActorById(id)
-	res := dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success activate actor",
-		Message:      "Success activate actor",
-		ResponseTime: fmt.Sprint(time.Since(start)),
-	}
-	return res, err
-}
-
-func (c actorControllerStruct) DeactivateActorById(id uint) (dto.ResponseMeta, error) {
-	start := time.Now()
-	err := c.actorUseCase.DeactivateActorById(id)
-	res := dto.ResponseMeta{
-		Success:      true,
-		MessageTitle: "Success deactivate actor",
-		Message:      "Success deactivate actor",
-		ResponseTime: fmt.Sprint(time.Since(start)),
-	}
-	return res, err
-}
-
-func (c actorControllerStruct) LoginActor(req ActorBody, agent string) (SuccessLogin, error) {
-	start := time.Now()
-	actor, err := c.actorUseCase.LoginActor(req)
-	if err != nil {
-		return SuccessLogin{}, err
-	}
-
-	hour, _ := strconv.Atoi(os.Getenv("HOUR"))
-	claims := CustomClaims{Role: uint(actor.RoleID), UserAgent: agent,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Duration(hour) * time.Hour).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "login",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
@@ -171,17 +242,10 @@ func (c actorControllerStruct) LoginActor(req ActorBody, agent string) (SuccessL
 	// Sign the token with the secret key
 	tokenString, err := token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_JWT")))
 	if err != nil {
-		return SuccessLogin{}, errors.New("failed generate to generate token")
+		errorMessage = entity.DefaultErrorResponseWithMessage(err.Error(), status)
+		return response, http.StatusInternalServerError, errorMessage
 	}
 
-	res := SuccessLogin{
-		ResponseMeta: dto.ResponseMeta{
-			Success:      true,
-			MessageTitle: "Success login actor",
-			Message:      "Success login actor",
-			ResponseTime: fmt.Sprint(time.Since(start)),
-		},
-		Data: tokenString,
-	}
-	return res, err
+	response = entity.DefaultSuccessResponseWithMessage("login success", status, tokenString)
+	return response, status, errorMessage
 }

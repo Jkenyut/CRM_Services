@@ -28,10 +28,10 @@ func (r RouterCustomerStruct) Handle(router *gin.Engine) {
 		r.customerRequestHandler.CreateCustomer,
 	)
 
-	customerRouter.GET("/:id", middleware.CustomerBulk,
+	customerRouter.GET("/:id", CustomerBulk,
 		r.customerRequestHandler.GetCustomerById,
 	)
-	customerRouter.GET("", middleware.CustomerBulk,
+	customerRouter.GET("", CustomerBulk,
 		r.customerRequestHandler.GetAllCustomer,
 	)
 
