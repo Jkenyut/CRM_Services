@@ -1,0 +1,30 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - 'CONNECT_DB=root:root@tcp('
+      - 'CONNECT_DB_LAST=:3306)/crm_service?charset=utf8mb4&parseTime=True&loc=UTC'
+      - 'HOUR=24'
+      - 'ACCESS_TOKEN_JWT=h6etN8R3s0rHlpmfBl4Lz/mFzyCXp3ZFasNWasvwCZCv07nSuwV/kO8euIEXbTkQPFpsD1fWigxbtRNC6NzMiw=='
+
+
+  db:
+    image: mysql:8.0
+    environment:
+      - 'MYSQL_DATABASE=crm_service'
+      - 'MYSQL_ROOT_PASSWORD=root'
+    ports:
+      - 3306:3306
+    volumes:
+      - crm-service:/var/lib/mysql
+
+
+volumes:
+  crm-service:
