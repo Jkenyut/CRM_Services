@@ -3,6 +3,7 @@ package main
 import (
 	"crm_service/model"
 	"crm_service/modules/actor"
+	"crm_service/modules/customer"
 	db2 "crm_service/utils/db"
 	"fmt"
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
@@ -34,8 +35,8 @@ func main() {
 	actorHandler := actor.NewRouter(db)
 	actorHandler.Handle(router)
 
-	//customerHandler := customer.NewRouter(db)
-	//customerHandler.Handle(router)
+	customerHandler := customer.NewRouter(db)
+	customerHandler.Handle(router)
 
 	errRouter := router.Run(":8081")
 	if errRouter != nil {

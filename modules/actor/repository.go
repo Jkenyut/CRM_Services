@@ -15,7 +15,7 @@ type RepositoryActorInterface interface {
 	CreateApproval(ctx context.Context, req *RequestApproval) (int, error)
 	GetActorByUsername(ctx context.Context, req RequestActor, actorRepository *model.Actor) (int, error)
 	GetActorById(ctx context.Context, id uint64, actorRepository *model.Actor) (int, error)
-	GetAllActor(ctx context.Context, limit uint64, page uint64, username string, actorRepository *[]model.Actor) (int, error)
+	GetAllActor(ctx context.Context, page uint64, limit uint64, username string, actorRepository *[]model.Actor) (int, error)
 	GetCountRowsActor(ctx context.Context, actorRepository *model.Actor) (int, error)
 	UpdateActorById(ctx context.Context, id uint64, updateActor RequestUpdateActor) (int, error)
 	DeleteActorById(ctx context.Context, id uint64) (int, error)
