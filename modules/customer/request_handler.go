@@ -38,7 +38,7 @@ func (h RequestHandlerCustomerStruct) CreateCustomer(c *gin.Context) {
 	err = validate.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.ValidateData(err))
+		c.AbortWithStatusJSON(helper.RequestValidate(err))
 		return
 
 	}
@@ -104,7 +104,7 @@ func (h RequestHandlerCustomerStruct) UpdateCustomerById(c *gin.Context) {
 	err = validate.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.ValidateData(err))
+		c.AbortWithStatusJSON(helper.RequestValidate(err))
 		return
 	}
 

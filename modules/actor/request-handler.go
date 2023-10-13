@@ -48,7 +48,7 @@ func (h RequestHandlerActorStruct) CreateActor(c *gin.Context) {
 	err = validate.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.ValidateData(err))
+		c.AbortWithStatusJSON(helper.RequestValidate(err))
 		return
 
 	}
@@ -119,7 +119,7 @@ func (h RequestHandlerActorStruct) UpdateActorById(c *gin.Context) {
 	err = validate.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.ValidateData(err))
+		c.AbortWithStatusJSON(helper.RequestValidate(err))
 		return
 	}
 
