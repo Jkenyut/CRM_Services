@@ -1,25 +1,27 @@
 package main
 
 import (
-	"crm_service/model"
-	"crm_service/modules/actor"
-	"crm_service/modules/customer"
-	db2 "crm_service/utils/db"
+	"crm_service/app/clients/connection"
+	"crm_service/app/config"
+	"crm_service/app/model"
+	"crm_service/app/services/service_actor"
 	"fmt"
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
 	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"os"
+	"github.com/go-playground/validator/v10"
 	"time"
 )
 
 func main() {
-
-	godotenv.Load("local.env")
-	fmt.Println(os.Getenv("CONNECT_DB"))
-	db := db2.GormMysql()
+	if err := config.NewConfig("local.env"); err != nil {
+		panic(err)
+	}
+	conf := config.GetConfig()
+	conn := connection.NewConnection(conf)
+	conn.Init()
+	validators := validator.New()
 	router := gin.New()
 	router.Use(cors.Default())
 	router.Use(helmet.Default())
@@ -32,12 +34,14 @@ func main() {
 		KeyFunc:      model.KeyFunc,
 	})
 	router.Use(mw)
-	actorHandler := actor.NewRouter(db)
-	actorHandler.Handle(router)
 
-	customerHandler := customer.NewRouter(db)
-	customerHandler.Handle(router)
+	fmt.Println("halo conn", conn)
+	service_actor.NewServiceActor(router, conf, conn, validators)
 
+	//
+	//customerHandler := customer.NewRouter(db)
+	//customerHandler.Handle(router)
+	//
 	errRouter := router.Run(":8081")
 	if errRouter != nil {
 		fmt.Println("error running server", errRouter)
