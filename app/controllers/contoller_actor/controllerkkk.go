@@ -18,45 +18,7 @@ package contoller_actor
 //}
 //
 //func (c actorControllerStruct) CreateActor(ctx context.Context, req RequestActor) (original.DefaultResponse, int, original.DefaultResponse) {
-//	var actorRepo model.Actor
-//	var response original.DefaultResponse
-//	var errorMessage original.DefaultResponse
-//
-//	//hashing password
-//	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
-//	reqActor := RequestActor{
-//		Username: req.Username,
-//		Password: string(hashingPassword),
-//	}
-//
-//	// create repository-entity_actor
-//	status, err := c.actorRepository.CreateActor(ctx, &reqActor)
-//	if err != nil {
-//		errorMessage = original.DefaultErrorResponseWithMessage(err.Error(), status)
-//		return response, status, errorMessage
-//	}
-//
-//	//get data
-//	status, err = c.actorRepository.GetActorByUsername(ctx, reqActor, &actorRepo)
-//	if err != nil {
-//		errorMessage = original.DefaultErrorResponseWithMessage(err.Error(), status)
-//		return response, status, errorMessage
-//	}
-//
-//	//req approval
-//	reqApproval := RequestApproval{
-//		ID: actorRepo.ID,
-//	}
-//
-//	//create approval
-//	status, err = c.actorRepository.CreateApproval(ctx, &reqApproval)
-//	if err != nil {
-//		errorMessage = original.DefaultErrorResponseWithMessage(err.Error(), status)
-//		return response, status, errorMessage
-//	}
-//
-//	response = original.DefaultSuccessResponseWithMessage("repository-entity_actor created", status, actorRepo)
-//	return response, status, errorMessage
+
 //}
 //
 //func (c actorControllerStruct) GetActorById(ctx context.Context, id uint64) (original.DefaultResponse, int, original.DefaultResponse) {

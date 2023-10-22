@@ -6,7 +6,7 @@ import (
 )
 
 type InterfaceRepositoryActor interface {
-	//CreateActor(ctx context.Context, req *entity_actor.RequestActor) (int, error)
+	CreateActor(ctx context.Context, req *model_actor.RequestActor) (int, error)
 	//CreateApproval(ctx context.Context, req *entity_actor.RequestApproval) (int, error)
 	//GetActorByUsername(ctx context.Context, req entity_actor.RequestActor, actorRepository *ModelActor) (int, error)
 	//GetActorById(ctx context.Context, id uint64, actorRepository *ModelActor) (int, error)
@@ -16,6 +16,6 @@ type InterfaceRepositoryActor interface {
 	//DeleteActorById(ctx context.Context, id uint64) (int, error)
 	//ActivateActorById(ctx context.Context, id uint64) (int, error)
 	//DeactivateActorById(ctx context.Context, id uint64) (int, error)
-	LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) error
+	LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error)
 	//GenerateJWT(ctx context.Context, req model_actor.ModelActor, agent string) (string, string, error)
 }

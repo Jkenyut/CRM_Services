@@ -21,6 +21,7 @@ func main() {
 	conf := config.GetConfig()
 	conn := connection.NewConnection(conf)
 	conn.Init()
+
 	validators := validator.New()
 	router := gin.New()
 	router.Use(cors.Default())
@@ -35,7 +36,6 @@ func main() {
 	})
 	router.Use(mw)
 
-	fmt.Println("halo conn", conn)
 	service_actor.NewServiceActor(router, conf, conn, validators)
 
 	//

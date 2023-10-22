@@ -30,15 +30,17 @@ func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_a
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
+	var args []interface{}
+	args = append(args, req.Username, req.Password)
 	//query
-	queryCreateActor := "INSERT INTO actors( username, password) SELECT ?,? WHERE NOT EXISTS (SELECT username from actors where username=?)"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, req.Username, req.Password, req.Username)
+	queryCreateActor := "INSERT INTO actors( username, password) SELECT ?,? WHERE NOT EXISTS (SELECT username FROM actors WHERE username=?)"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, args...)
 
 	//check
 	if result.Error != nil {
 		return http.StatusInternalServerError, errors.New("failed exec query create repository-model_actor")
 	} else if result.RowsAffected == 0 {
-		// Username does not exist, proceed with creating the repository-model_actor
+		// Username does not exist, proceed with creating the model
 		return http.StatusInternalServerError, errors.New("username already exists")
 	}
 
@@ -46,15 +48,16 @@ func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_a
 	return http.StatusCreated, nil
 }
 
-func (repo *ClientRepositoryActor) createApproval(ctx context.Context, req *model_actor.RequestApproval) (int, error) {
+func (repo *ClientRepositoryActor) CreateApproval(ctx context.Context, req *model_actor.RequestApproval) (int, error) {
 	// timeout
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
-
+	var args []interface{}
+	args = append(args, req.ID)
 	//query
-	queryCreateApproval := "insert into register_approval(admin_id) values(?)"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateApproval, req.ID)
+	queryCreateApproval := "INSERT INTO register_approval(admin_id) VALUES(?)"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateApproval, args...)
 	if result.Error != nil {
 		// return an if mysql error
 		return http.StatusInternalServerError, errors.New("failed exec query create approval")
@@ -65,14 +68,15 @@ func (repo *ClientRepositoryActor) createApproval(ctx context.Context, req *mode
 	return http.StatusOK, nil
 }
 
-func (repo *ClientRepositoryActor) getActorByUsername(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
+func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
-
+	var args []interface{}
+	args = append(args, req.Username)
 	//query
-	querySelectActor := "select id, username, role_id, verified, active, created_at, updated_at from actors where username=?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(querySelectActor, req.Username).Scan(&actorRepository)
+	querySelectActor := "SELECT id, username, role_id, verified, active, created_at, updated_at FROM actors WHERE username=?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(querySelectActor, args...).Scan(&actorRepository)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
@@ -84,14 +88,14 @@ func (repo *ClientRepositoryActor) getActorByUsername(ctx context.Context, req m
 	return http.StatusOK, nil
 }
 
-func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, id uint64, actorRepository *model_actor.ModelActor) (int, error) {
+func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	//query
-	queryGetActorById := "select id, username, role_id, verified, active, created_at, updated_at from actors where id=?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById, id).Scan(&actorRepository)
+	queryGetActorById := "SELECT id, username, role_id, verified, active, created_at, updated_at FROM actors WHERE id=?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById, ID).Scan(&actorRepository)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
@@ -110,10 +114,12 @@ func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64,
 
 	//page
 	startID := (page - 1) * limit
+	var args []interface{}
+	args = append(args, startID, fmt.Sprint(username, "%"), limit)
 
 	//query
-	queryGetActorById := "select id, username, role_id, verified, active, created_at, updated_at from actors where id > ? AND username like ? limit ?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById, startID, fmt.Sprint(username, "%"), limit).Scan(&actorRepository)
+	queryGetActorById := "SELECT id, username, role_id, verified, active, created_at, updated_at FROM actors WHERE id > ? AND username LIKE ? LIMIT ?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById, args...).Scan(&actorRepository)
 
 	if result.Error != nil {
 		//error mysql
@@ -131,7 +137,7 @@ func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorR
 	defer cancel()
 
 	//query
-	queryGetActorById := "select count(id) as total from actors"
+	queryGetActorById := "SELECT count(id) AS total FROM actors"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById).Scan(&actorRepository)
 	if result.Error != nil {
 		//error mysql
@@ -149,9 +155,11 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
+	var args []interface{}
+	args = append(args, updateActor.Username, updateActor.Verified, updateActor.Active, id)
 	//query
-	queryUpdateActorById := "update actors set username=?,verified=?,verified=? WHERE id=?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, updateActor.Username, updateActor.Verified, updateActor.Active, id)
+	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,verified=? WHERE id=?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query UpdateActorById")
@@ -168,8 +176,11 @@ func (repo *ClientRepositoryActor) DeleteActorById(ctx context.Context, id uint6
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
-	queryDeleteActorById := "delete from actors where id =?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeleteActorById, id)
+	var args []interface{}
+	args = append(args, id)
+
+	queryDeleteActorById := "DELETE FROM actors WHERE id =?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeleteActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query DeleteActorById")
@@ -185,8 +196,11 @@ func (repo *ClientRepositoryActor) ActivateActorById(ctx context.Context, id uin
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
-	queryActivateActorById := "update actors set active='true' where id=?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryActivateActorById, id)
+	var args []interface{}
+	args = append(args, id)
+
+	queryActivateActorById := "UPDATE actors SET active='true' where id=?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryActivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query ActivateActorById")
@@ -202,8 +216,11 @@ func (repo *ClientRepositoryActor) DeactivateActorById(ctx context.Context, id u
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
-	queryDeactivateActorById := "update actors set verified='true' where id=?"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeactivateActorById, id)
+	var args []interface{}
+	args = append(args, id)
+
+	queryDeactivateActorById := "UPDATE actors SET verified='false' where id=?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeactivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query DeactivateActorById")
@@ -215,27 +232,27 @@ func (repo *ClientRepositoryActor) DeactivateActorById(ctx context.Context, id u
 
 }
 
-func (repo *ClientRepositoryActor) LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) error {
-	fmt.Println("wakka")
-	fmt.Println("waktu", repo.conf.Database.Timeout)
+func (repo *ClientRepositoryActor) LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
-	fmt.Println("hanya ini")
-	queryLoginActor := "select password,verified,role_id,active from actors where username=?"
-	err := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryLoginActor, req.Username).Scan(&actorRepository).Error
-	fmt.Println("sampe sini")
+	var args []interface{}
+	args = append(args, req.Username)
+
+	queryLoginActor := "SELECT password,verified,role_id,active FROM actors WHERE username=?"
+	err := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryLoginActor, args...).Scan(&actorRepository).Error
+
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// return if not found
-			return errors.New("repository-model_actor not found")
+			return http.StatusNotFound, errors.New("repository-model_actor not found")
 		} else {
 			// return an if mysql error
-			return errors.New("failed exec query login repository-model_actor")
+			return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
 		}
 	}
 	//ok
-	return nil
+	return http.StatusOK, nil
 
 }
