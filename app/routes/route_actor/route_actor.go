@@ -10,10 +10,10 @@ type InterfaceRouteActor interface {
 }
 
 type RouterActor struct {
-	ctr contoller_actor.InterfacControllerActor
+	ctr contoller_actor.InterfaceControllerActor
 }
 
-func NewRouteActor(ctr contoller_actor.InterfacControllerActor) InterfaceRouteActor {
+func NewRouteActor(ctr contoller_actor.InterfaceControllerActor) InterfaceRouteActor {
 	return &RouterActor{
 		ctr: ctr,
 	}
@@ -21,13 +21,13 @@ func NewRouteActor(ctr contoller_actor.InterfacControllerActor) InterfaceRouteAc
 }
 
 func (r *RouterActor) Handle(router *gin.Engine) {
-	//basepath := "v1/repository-entity_actor"
+	basePath := "v1/actor"
 
-	//actorRouter := router.Group(basepath, middleware.Auth)
+	actorRouter := router.Group(basePath)
 	//
-	//actorRouter.POST("/register",
-	//	r.actorRequestHandler.CreateActor,
-	//)
+	actorRouter.POST("/register",
+		r.ctr.CreateActor,
+	)
 	//
 	//actorRouter.GET("/:id",
 	//	r.actorRequestHandler.GetActorById,

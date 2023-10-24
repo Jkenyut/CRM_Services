@@ -17,15 +17,17 @@ import (
 	"time"
 )
 
-type InterfacControllerActor interface {
+type InterfaceControllerActor interface {
 	LoginActor(c *gin.Context)
+	CreateActor(c *gin.Context)
 }
+
 type ControllerActor struct {
 	client    repository_actor.InterfaceRepositoryActor
 	validator *validator.Validate
 }
 
-func NewControllerActor(client repository_actor.InterfaceRepositoryActor, validate *validator.Validate) InterfacControllerActor {
+func NewControllerActor(client repository_actor.InterfaceRepositoryActor, validate *validator.Validate) InterfaceControllerActor {
 	return &ControllerActor{
 		client:    client,
 		validator: validate,
@@ -34,14 +36,13 @@ func NewControllerActor(client repository_actor.InterfaceRepositoryActor, valida
 
 func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	// get environment
-
-	envJWT, _ := c.Get("envJWT")
-	setJWT := envJWT.(map[string]interface{})
-
-	if setJWT["role"] != "1" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, original.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
-		return
-	}
+	//envJWT, _ := c.Get("envJWT")
+	//setJWT := envJWT.(map[string]interface{})
+	//
+	//if setJWT["role"] != "1" {
+	//	c.AbortWithStatusJSON(http.StatusUnauthorized, original.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
+	//	return
+	//}
 
 	// bind to json
 	var request model_actor.RequestActor
@@ -60,14 +61,12 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	}
 
 	//controllers
-	var actorRepo model_actor.ModelActor
-	var response original.DefaultResponse
-	var status int
 
 	//hashing password
 	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(request.Password), 12)
 	request.Password = string(hashingPassword)
 
+	var status int
 	// create repository-model_actor
 	status, err = ctr.client.CreateActor(c, &request)
 	if status < 200 || status > 299 {
@@ -75,40 +74,33 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 		return
 	}
 
-	//req approval
-	reqApproval := RequestApproval{
-		ID: actorRepo.ID,
-	}
+	var responseActor model_actor.ResponseActor
+	responseActor.Username = request.Username
+	responseActor.CreatedAt = helper.ConvertTimeToWIB(time.Now())
+	responseActor.RoleID = 2
+	responseActor.Active = "false"
 
-	//create approval
-	status, err = c.actorRepository.CreateApproval(ctx, &reqApproval)
+	c.JSON(http.StatusCreated, original.DefaultSuccessResponseWithMessage("actor created", status, responseActor))
+}
+
+func (ctr *ControllerActor) GetActorById(c *gin.Context) {
+	var actorRepo model_actor.ModelActor
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		return
+	}
+	status, err := ctr.client.GetActorById(c, id, &actorRepo)
+	//check status
 	if status < 200 || status > 299 {
 		c.AbortWithStatusJSON(status, original.DefaultErrorResponseWithMessage(err.Error(), status))
 		return
 	}
 
-	response = original.DefaultSuccessResponseWithMessage("repository-entity_actor created", status, actorRepo)
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusCreated, original.DefaultSuccessResponseWithMessage("actor created", status, actorRepo))
 }
 
-//
-//	func (h ControllerActor) GetActorById(c *gin.Context) {
-//		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-//
-//		if err != nil {
-//			c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
-//			return
-//		}
-//		res, status, errMessage := h.ctr.GetActorById(c, id)
-//		//check status
-//		if status < 200 || status > 299 {
-//			c.AbortWithStatusJSON(status, errMessage)
-//			return
-//		}
-//
-//		c.JSON(http.StatusOK, res)
-//	}
-//
 //	func (h ControllerActor) GetAllActor(c *gin.Context) {
 //		page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
 //		username := c.DefaultQuery("username", "")
@@ -126,41 +118,47 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 //		}
 //		c.JSON(http.StatusOK, res)
 //	}
-//
-//	func (h ControllerActor) UpdateActorById(c *gin.Context) {
-//		envJWT, _ := c.Get("envJWT")
-//		setJWT := envJWT.(map[string]interface{})
-//
-//		if setJWT["role"] != "1" {
-//			c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
-//			return
-//		}
-//
-//		id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-//		if err != nil {
-//			c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
-//			return
-//		}
-//
-//		request := RequestUpdateActor{}
-//		err = c.Bind(&request)
-//		//validate
-//		err = validate.Struct(request)
-//		if err != nil {
-//			// Validation failed
-//			c.AbortWithStatusJSON(helper.RequestValidate(err))
-//			return
-//		}
-//
-//		res, status, errMessage := h.ctr.UpdateActorById(c, id, request)
-//		//check status
-//		if status < 200 || status > 299 {
-//			c.AbortWithStatusJSON(status, errMessage)
-//			return
-//		}
-//
-//		c.JSON(http.StatusOK, res)
-//	}
+func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
+	//envJWT, _ := c.Get("envJWT")
+	//setJWT := envJWT.(map[string]interface{})
+	//
+	//if setJWT["role"] != "1" {
+	//	c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
+	//	return
+	//}
+
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		return
+	}
+
+	var request model_actor.RequestUpdateActor
+	err = c.Bind(&request)
+	//validate
+	err = ctr.validator.Struct(request)
+	if err != nil {
+		// Validation failed
+		c.AbortWithStatusJSON(helper.RequestValidate(err))
+		return
+	}
+
+	status, errMessage := ctr.client.UpdateActorById(c, id, request)
+	//check status
+	if status < 200 || status > 299 {
+		c.AbortWithStatusJSON(status, errMessage)
+		return
+	}
+	var responseActor model_actor.ResponseActor
+	responseActor.Username = request.Username
+	responseActor.UpdatedAt = helper.ConvertTimeToWIB(time.Now())
+	responseActor.RoleID = 2
+	responseActor.Verified = request.Verified
+	responseActor.Active = request.Active
+
+	c.JSON(http.StatusOK, original.DefaultSuccessResponseWithMessage("Update data actor", status, responseActor))
+}
+
 //
 //	func (h ControllerActor) DeleteActorById(c *gin.Context) {
 //		envJWT, _ := c.Get("envJWT")

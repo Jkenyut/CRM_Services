@@ -31,7 +31,7 @@ func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_a
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, req.Username, req.Password)
+	args = append(args, req.Username, req.Password, req.Username)
 	//query
 	queryCreateActor := "INSERT INTO actors( username, password) SELECT ?,? WHERE NOT EXISTS (SELECT username FROM actors WHERE username=?)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, args...)
@@ -158,7 +158,7 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 	var args []interface{}
 	args = append(args, updateActor.Username, updateActor.Verified, updateActor.Active, id)
 	//query
-	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,verified=? WHERE id=?"
+	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,activate=? WHERE id=?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, args...)
 	if result.Error != nil {
 		//error mysql
@@ -219,7 +219,7 @@ func (repo *ClientRepositoryActor) DeactivateActorById(ctx context.Context, id u
 	var args []interface{}
 	args = append(args, id)
 
-	queryDeactivateActorById := "UPDATE actors SET verified='false' where id=?"
+	queryDeactivateActorById := "UPDATE actors SET active='false' where id=?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeactivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
