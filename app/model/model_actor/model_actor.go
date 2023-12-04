@@ -19,18 +19,18 @@ func (ModelActor) TableName() string {
 }
 
 type RequestActor struct {
-	Username string `json:"username,omitempty" validate:"required,min=1,max=100,alphanum"`
-	Password string `json:"password,omitempty" validate:"required,min=6,max=100"`
+	Username string `json:"username,omitempty" validate:"required,min=1,max=100,alphanum=only character alphabet and numeric,ascii=only characters ASCII"`
+	Password string `json:"password,omitempty" validate:"required,min=6,max=100,ascii"`
 }
 
 type RequestApproval struct {
-	ID uint64 `json:"adminID,omitempty"`
+	ID uint64 `json:"adminID,omitempty,ascii=only characters ASCII""`
 }
 
 type RequestUpdateActor struct {
-	Username string `json:"username,omitempty" validate:"min=1,max=100,alphanum"`
-	Verified string `json:"verified,omitempty" validate:"eq=true|eq=false"`
-	Active   string `json:"active,omitempty" validate:"eq=true|eq=false"`
+	Username string `json:"username,omitempty" validate:"min=1,max=100,alphanum=only character alphabet and numeric,ascii=only characters ASCII"`
+	Verified string `json:"verified,omitempty" validate:"oneof=true false,ascii=only characters ASCII"`
+	Active   string `json:"active,omitempty" validate:"oneof=true false,ascii=only characters ASCII"`
 }
 
 type FindAllActor struct {
@@ -43,7 +43,6 @@ type FindAllActor struct {
 type CustomClaimsJWT struct {
 	Role      string `json:"role,omitempty"`
 	UserAgent string `json:"user_agent,omitempty"`
-	Refresh   string `json:"refresh"`
 }
 
 type ResponseActor struct {

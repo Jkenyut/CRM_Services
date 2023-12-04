@@ -1,4 +1,4 @@
-package customer
+package contoller_customer
 
 import (
 	"context"
@@ -37,14 +37,14 @@ func (repo Customer) CreateCustomer(ctx context.Context, req RequestCustomer) (i
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
 	defer cancel()
 	//query
-	queryCreateCustomer := "INSERT INTO customer(first_name, last_name, email, avatar)  SELECT ?,?,?,? WHERE NOT EXISTS (SELECT email from customer where email=?)"
+	queryCreateCustomer := "INSERT INTO contoller_customer(first_name, last_name, email, avatar)  SELECT ?,?,?,? WHERE NOT EXISTS (SELECT email from contoller_customer where email=?)"
 	result := repo.db.WithContext(ctx).Exec(queryCreateCustomer, req.FirstName, req.LastName, req.Email, req.Avatar, req.Email)
 
 	//check
 	if result.Error != nil {
-		return http.StatusInternalServerError, errors.New("failed exec query create customer")
+		return http.StatusInternalServerError, errors.New("failed exec query create contoller_customer")
 	} else if result.RowsAffected == 0 {
-		// Username does not exist, proceed with creating the customer
+		// Username does not exist, proceed with creating the contoller_customer
 		return http.StatusInternalServerError, errors.New("username already exists")
 	}
 
@@ -58,14 +58,14 @@ func (repo Customer) GetCustomerByEmail(ctx context.Context, req RequestCustomer
 	defer cancel()
 
 	//query
-	querySelectCustomer := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where email=?"
+	querySelectCustomer := "select id, first_name, last_name, email, avatar, created_at, updated_at from contoller_customer where email=?"
 	result := repo.db.WithContext(ctx).Raw(querySelectCustomer, req.Email).Scan(&customerRepository)
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+		return http.StatusInternalServerError, errors.New("failed exec query login contoller_customer")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("customer not found")
+		return http.StatusNotFound, errors.New("contoller_customer not found")
 	}
 
 	return http.StatusOK, nil
@@ -77,14 +77,14 @@ func (repo Customer) GetCustomerById(ctx context.Context, id uint64, customerRep
 	defer cancel()
 
 	//query
-	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where id=?"
+	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from contoller_customer where id=?"
 	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById, id).Scan(&customerRepository)
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+		return http.StatusInternalServerError, errors.New("failed exec query login contoller_customer")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("customer not found")
+		return http.StatusNotFound, errors.New("contoller_customer not found")
 	}
 
 	return http.StatusOK, nil
@@ -99,12 +99,12 @@ func (repo Customer) GetAllCustomer(ctx context.Context, page uint64, limit uint
 	startID := (page - 1) * limit
 
 	//query
-	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from customer where id > ? AND first_name like ? AND last_name like ? limit ?"
+	queryGetCustomerById := "select id, first_name, last_name, email, avatar, created_at, updated_at from contoller_customer where id > ? AND first_name like ? AND last_name like ? limit ?"
 	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById, startID, fmt.Sprint(req.FirstName, "%"), fmt.Sprint(req.LastName, "%"), limit).Scan(&customerRepository)
 
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query all customer")
+		return http.StatusInternalServerError, errors.New("failed exec query all contoller_customer")
 	}
 
 	return http.StatusOK, nil
@@ -115,14 +115,14 @@ func (repo Customer) GetCountRowsCustomer(ctx context.Context, customerRepositor
 	defer cancel()
 
 	//query
-	queryGetCustomerById := "select count(id) as total from customer"
+	queryGetCustomerById := "select count(id) as total from contoller_customer"
 	result := repo.db.WithContext(ctx).Raw(queryGetCustomerById).Scan(&customerRepository)
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query login customer")
+		return http.StatusInternalServerError, errors.New("failed exec query login contoller_customer")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("count customer not found")
+		return http.StatusNotFound, errors.New("count contoller_customer not found")
 	}
 
 	return http.StatusOK, nil
@@ -134,7 +134,7 @@ func (repo Customer) UpdateCustomerById(ctx context.Context, id uint64, updateCu
 	defer cancel()
 
 	//query
-	queryUpdateCustomerById := "update customer set  first_name=?,last_name=?,avatar=? WHERE id=?"
+	queryUpdateCustomerById := "update contoller_customer set  first_name=?,last_name=?,avatar=? WHERE id=?"
 	result := repo.db.WithContext(ctx).Exec(queryUpdateCustomerById, updateCustomer.FirstName, updateCustomer.LastName, updateCustomer.Avatar, id)
 	if result.Error != nil {
 		//error mysql
@@ -152,14 +152,14 @@ func (repo Customer) DeleteCustomerById(ctx context.Context, id uint64) (int, er
 	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
 	defer cancel()
 
-	queryDeleteCustomerById := "delete from customer where id =?"
+	queryDeleteCustomerById := "delete from contoller_customer where id =?"
 	result := repo.db.WithContext(ctx).Exec(queryDeleteCustomerById, id)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query DeleteCustomerById")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("customer is not found,delete unacceptable")
+		return http.StatusNotFound, errors.New("contoller_customer is not found,delete unacceptable")
 	}
 	return http.StatusOK, nil
 }

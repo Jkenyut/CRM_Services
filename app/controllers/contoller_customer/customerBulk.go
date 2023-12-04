@@ -1,8 +1,8 @@
-package customer
+package contoller_customer
 
 import (
 	"context"
-	"crm_service/app/model/original"
+	"crm_service/app/model/origin"
 	db2 "crm_service/utils/clients"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ func CustomerBulk(c *gin.Context) {
 	// Send HTTP GET request using axios
 	resp, err := axios.Get(url, nil)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("uri error", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("uri error", http.StatusBadRequest))
 		return
 	}
 
@@ -26,7 +26,7 @@ func CustomerBulk(c *gin.Context) {
 	var responseUri ResponseBulkData
 	err = json.Unmarshal(resp.Data, &responseUri)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("data decode error", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("data decode error", http.StatusBadRequest))
 		return
 	}
 
@@ -37,12 +37,12 @@ func CustomerBulk(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(3000)*time.Millisecond)
 		defer cancel()
 		//query
-		queryCreateBulkCustomer := "INSERT INTO customer(first_name, last_name, email, avatar)  SELECT ?,?,?,?  WHERE NOT EXISTS (SELECT email from customer where email=?)"
+		queryCreateBulkCustomer := "INSERT INTO contoller_customer(first_name, last_name, email, avatar)  SELECT ?,?,?,?  WHERE NOT EXISTS (SELECT email from contoller_customer where email=?)"
 		result := db.WithContext(ctx).Exec(queryCreateBulkCustomer, customer.FirstName, customer.LastName, customer.Email, customer.Avatar, customer.Email)
 
 		//check
 		if result.Error != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("failed exec query create bulk repository-entity_actor", http.StatusBadRequest))
+			c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("failed exec query create bulk repository-entity_actor", http.StatusBadRequest))
 			break
 		}
 	}

@@ -1,4 +1,4 @@
-package customer
+package contoller_customer
 
 import (
 	"crm_service/app/middleware"
@@ -21,7 +21,7 @@ func NewRouter(
 }
 
 func (r RouterCustomerStruct) Handle(router *gin.Engine) {
-	basepath := "v1/customer"
+	basepath := "v1/contoller_customer"
 	customerRouter := router.Group(basepath, middleware.Auth)
 
 	customerRouter.POST("/register",

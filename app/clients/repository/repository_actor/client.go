@@ -7,7 +7,6 @@ import (
 	"crm_service/app/model/model_actor"
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -27,7 +26,7 @@ func NewClientActor(conf *config.Config, con connection.InterfaceConnection) Int
 func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_actor.RequestActor) (int, error) {
 	//timeout
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
@@ -48,29 +47,9 @@ func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_a
 	return http.StatusCreated, nil
 }
 
-func (repo *ClientRepositoryActor) CreateApproval(ctx context.Context, req *model_actor.RequestApproval) (int, error) {
-	// timeout
+func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req *model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
-	defer cancel()
-	var args []interface{}
-	args = append(args, req.ID)
-	//query
-	queryCreateApproval := "INSERT INTO register_approval(admin_id) VALUES(?)"
-	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateApproval, args...)
-	if result.Error != nil {
-		// return an if mysql error
-		return http.StatusInternalServerError, errors.New("failed exec query create approval")
-	} else if result.RowsAffected == 0 {
-		return http.StatusInternalServerError, errors.New("failed exec query insert approval")
-	}
-
-	return http.StatusOK, nil
-}
-
-func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
-	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 	var args []interface{}
 	args = append(args, req.Username)
@@ -82,7 +61,7 @@ func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req m
 		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("repository-model_actor not found")
+		return http.StatusNotFound, errors.New("actor not found")
 	}
 
 	return http.StatusOK, nil
@@ -90,7 +69,7 @@ func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req m
 
 func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	//query
@@ -101,7 +80,7 @@ func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, 
 		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("repository-model_actor not found")
+		return http.StatusNotFound, errors.New("actor not found")
 	}
 
 	return http.StatusOK, nil
@@ -109,7 +88,7 @@ func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, 
 
 func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64, limit uint64, username string, actorRepository *[]model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	//page
@@ -124,16 +103,14 @@ func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64,
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query all repository-model_actor")
-	} else if result.RowsAffected == 0 {
-		// return if not found
-		return http.StatusNotFound, errors.New("all repository-model_actor not found")
 	}
 
 	return http.StatusOK, nil
 }
+
 func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorRepository *model_actor.ModelActor) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	//query
@@ -142,9 +119,6 @@ func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorR
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query count all repository-model_actor")
-	} else if result.RowsAffected == 0 {
-		// return if not found
-		return http.StatusNotFound, errors.New("count repository-model_actor not found")
 	}
 
 	return http.StatusOK, nil
@@ -152,7 +126,7 @@ func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorR
 
 func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint64, updateActor model_actor.RequestUpdateActor) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
@@ -173,7 +147,7 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 
 func (repo *ClientRepositoryActor) DeleteActorById(ctx context.Context, id uint64) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
@@ -186,73 +160,47 @@ func (repo *ClientRepositoryActor) DeleteActorById(ctx context.Context, id uint6
 		return http.StatusInternalServerError, errors.New("failed exec query DeleteActorById")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("repository-model_actor is not found,delete unacceptable")
+		return http.StatusNotFound, errors.New("actor is not found,delete unacceptable")
 	}
 	return http.StatusOK, nil
 }
 
 func (repo *ClientRepositoryActor) ActivateActorById(ctx context.Context, id uint64) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
 	args = append(args, id)
 
-	queryActivateActorById := "UPDATE actors SET active='true' where id=?"
+	queryActivateActorById := "UPDATE actors SET active='true' where id=? AND (active != 'true' OR active IS NULL) "
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryActivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query ActivateActorById")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("repository-model_actor is not found,update unacceptable")
+		return http.StatusNotFound, errors.New("actor is not found or data has not changed, update unacceptable")
 	}
 	return http.StatusOK, nil
 }
 
 func (repo *ClientRepositoryActor) DeactivateActorById(ctx context.Context, id uint64) (int, error) {
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
 	args = append(args, id)
 
-	queryDeactivateActorById := "UPDATE actors SET active='false' where id=?"
+	queryDeactivateActorById := "UPDATE actors SET active='false' where id=? AND (active != 'false' OR active IS NULL)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeactivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query DeactivateActorById")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("repository-model_actor is not found,update unacceptable")
+		return http.StatusNotFound, errors.New("actor is not found or data has not changed, update unacceptable")
 	}
 	return http.StatusOK, nil
-
-}
-
-func (repo *ClientRepositoryActor) LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
-	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
-	defer cancel()
-
-	var args []interface{}
-	args = append(args, req.Username)
-
-	queryLoginActor := "SELECT password,verified,role_id,active FROM actors WHERE username=?"
-	err := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryLoginActor, args...).Scan(&actorRepository).Error
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// return if not found
-			return http.StatusNotFound, errors.New("repository-model_actor not found")
-		} else {
-			// return an if mysql error
-			return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
-		}
-	}
-	//ok
-	return http.StatusOK, nil
-
 }

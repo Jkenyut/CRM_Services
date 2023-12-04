@@ -1,73 +1,58 @@
 package config
 
 import (
-	"errors"
-	"github.com/joho/godotenv"
+	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
-	"strconv"
 )
 
-type DatabaseConfig struct {
-	URL     string
-	Timeout int
+var config Config
+
+type SQLConfig struct {
+	Enable        bool   `yaml:"enable" default:"false" desc:"config:sql:enable"`
+	Driver        string `yaml:"driver" default:"" desc:"config:sql:driver"`
+	Host          string `yaml:"host" default:"127.0.0.1" desc:"config:sql:host"`
+	Port          int    `yaml:"port" default:"3306" desc:"config:sql:port"`
+	Username      string `yaml:"username" default:"root"  desc:"config:sql:username"`
+	Password      string `yaml:"password" default:"" desc:"config:sql:password"`
+	Database      string `yaml:"database" default:"crm_bootcamp" desc:"config:sql:database"`
+	Options       string `yaml:"options" default:"" desc:"config:sql:options"`
+	Connection    string `yaml:"connection" default:"" desc:"config:sql:connection"`
+	AutoReconnect bool   `yaml:"autoreconnect" default:"false"  desc:"config:sql:autoreconnect"`
+	StartInterval int    `yaml:"startinterval" default:"2"  desc:"config:sql:startinterval"`
+	MaxError      int    `yaml:"maxerror" default:"5"  desc:"config:sql:maxerror"`
+	CustomPool    bool   `yaml:"customPool" default:"5"  desc:"config:sql:customPool"`
+	MaxConn       int    `yaml:"maxConn" default:"5"  desc:"config:sql:maxConn"`
+	MaxIdle       int    `yaml:"maxIdle" default:"5"  desc:"config:sql:maxIdle"`
+	LifeTime      int    `yaml:"lifeTime" default:"5"  desc:"config:sql:lifeTime"`
 }
 
-type JWTConfig struct {
-	RefreshTokenJwt string
-	AccessTokenJwt  string
-}
-
+// please edit in here
 type Config struct {
-	Database DatabaseConfig
-	JWT      JWTConfig
+	Database struct {
+		CRM     SQLConfig `yaml:"crm"`
+		Timeout int       `yaml:"timeout" default:"30000"`
+	} `yaml:"database"`
+	JWT struct {
+		JwtAccess  string `yaml:"JWTACCESS" default:"random"`
+		JwtRefresh string `yaml:"JWTREFRESH" default:"random"`
+	}
+	Mock bool `yaml:"mock"`
 }
 
-var config *Config
-
-func (c *Config) SetConfig() *Config {
-	databaseURL := os.Getenv("DATABASE_CONNECTED")
-	databaseTimeoutStr := os.Getenv("DATABASE_TIMEOUT")
-	databaseTimeout, err := strconv.Atoi(databaseTimeoutStr)
+func init() {
+	// Read YAML file
+	yamlFile, err := os.ReadFile("config.yaml")
 	if err != nil {
-		databaseTimeout = 30000
+		fmt.Sprintf("Error reading YAML file: %s\n", err)
 	}
 
-	jwtRefreshTokenJwt := os.Getenv("REFRESH_TOKEN_JWT")
-	jwtAccessTokenJwt := os.Getenv("ACCESS_TOKEN_JWT")
-
-	config = &Config{
-		Database: DatabaseConfig{
-			URL:     databaseURL,
-			Timeout: databaseTimeout,
-		},
-		JWT: JWTConfig{
-			RefreshTokenJwt: jwtRefreshTokenJwt,
-			AccessTokenJwt:  jwtAccessTokenJwt,
-		},
+	// Unmarshal the YAML file into a Config struct
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		fmt.Sprintf("Error parsing YAML file: %s\n", err)
 	}
-	return config
 }
-
 func GetConfig() *Config {
-	return config
+	return &config
 }
-
-func NewConfig(conf string) error {
-	err := godotenv.Load(conf)
-	if err != nil {
-		return errors.New("error load config")
-	}
-	config.SetConfig()
-	return nil
-}
-
-//func SetConfig() *Config {
-//	conf := &Config{}
-//	conf.Database.URL =
-//	conf.Database.Timeout = 30000
-//	return conf
-//}
-
-//func GetConfig() *Config {
-//	return config
-//}

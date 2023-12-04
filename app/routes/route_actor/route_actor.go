@@ -48,9 +48,6 @@ func (r *RouterActor) Handle(router *gin.Engine) {
 	//actorRouter.GET("/:id/deactivate",
 	//	r.actorRequestHandler.DeactivateActorById)
 
-	router.POST("v1/actor/login",
-		r.ctr.LoginActor)
-
 	//router.GET("v1/repository-entity_actor/logout",
 	//	r.actorRequestHandler.LogoutActor)
 }

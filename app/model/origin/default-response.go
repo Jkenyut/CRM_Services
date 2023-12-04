@@ -1,4 +1,4 @@
-package original
+package origin
 
 import (
 	"golang.org/x/text/cases"

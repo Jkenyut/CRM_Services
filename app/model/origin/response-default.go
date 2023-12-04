@@ -1,4 +1,4 @@
-package original
+package origin
 
 type ResponseDefault struct {
 	Success    bool   `json:"success"`

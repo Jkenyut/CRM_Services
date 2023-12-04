@@ -1,7 +1,7 @@
-package customer
+package contoller_customer
 
 import (
-	"crm_service/app/model/original"
+	"crm_service/app/model/origin"
 	"crm_service/app/utils/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -30,7 +30,7 @@ func (h RequestHandlerCustomerStruct) CreateCustomer(c *gin.Context) {
 	err := c.Bind(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -55,7 +55,7 @@ func (h RequestHandlerCustomerStruct) GetCustomerById(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
 		return
 	}
 	res, status, errMessage := h.ctr.GetCustomerById(c, id)
@@ -77,7 +77,7 @@ func (h RequestHandlerCustomerStruct) GetAllCustomer(c *gin.Context) {
 		LastName:  lastName,
 	}
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
 		return
 	}
 
@@ -94,7 +94,7 @@ func (h RequestHandlerCustomerStruct) UpdateCustomerById(c *gin.Context) {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -122,7 +122,7 @@ func (h RequestHandlerCustomerStruct) DeleteCustomerById(c *gin.Context) {
 
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, original.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 

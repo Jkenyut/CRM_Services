@@ -1,4 +1,4 @@
-package customer
+package contoller_customer
 
 import (
 	"crm_service/app/model"
