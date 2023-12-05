@@ -46,15 +46,15 @@ func (repo *ClientAuth) LoginActor(ctx context.Context, req model_actor.RequestA
 	return http.StatusOK, nil
 }
 
-func (repo *ClientAuth) InsertSession(ctx context.Context, tokenRefresh string, expiredRefresh time.Time) (status int, error error) {
+func (repo *ClientAuth) InsertSession(ctx context.Context, activity_id string, tokenRefresh string, expiredRefresh time.Time) (status int, error error) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, tokenRefresh, expiredRefresh, tokenRefresh)
+	args = append(args, activity_id, tokenRefresh, expiredRefresh, tokenRefresh)
 
-	queryCreateActor := "INSERT INTO session(jwt, expired) SELECT ?,? WHERE NOT EXISTS (SELECT jwt FROM session WHERE jwt=?)"
+	queryCreateActor := "INSERT INTO session(activity_id,jwt_refresh, expired) SELECT ?,?,? WHERE NOT EXISTS (SELECT jwt FROM session WHERE jwt=?)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, args...)
 
 	//check
@@ -62,19 +62,41 @@ func (repo *ClientAuth) InsertSession(ctx context.Context, tokenRefresh string, 
 		return http.StatusInternalServerError, errors.New("failed exec query Insert Session")
 	} else if result.RowsAffected == 0 {
 		// Username does not exist, proceed with creating the model
-		return http.StatusInternalServerError, errors.New("jwt Already Exist")
+		return http.StatusConflict, errors.New("jwt Already Exist")
 	}
 	return http.StatusOK, nil
 }
 
-func (repo *ClientAuth) GenerateJWTAccessCustom(ctx context.Context, req model_actor.ModelActor, agent string) (int, string, error) {
+func (repo *ClientAuth) CheckSession(ctx context.Context, activity_id string) (status int, out origin.JWTModel, error error) {
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
+	defer cancel()
+
+	var args []interface{}
+	args = append(args, activity_id)
+
+	queryCreateActor := "SELECT jwt_refresh FROM session WHERE activity_id = ?"
+	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryCreateActor, args...).Scan(&out)
+
+	//check
+	if result.Error != nil {
+		return http.StatusInternalServerError, out, errors.New("failed exec query Check Session")
+	} else if result.RowsAffected == 0 {
+		// Username does not exist, proceed with creating the model
+		return http.StatusNotFound, out, errors.New("Authentication failed, token is access expired.")
+	}
+	return http.StatusOK, out, nil
+}
+
+func (repo *ClientAuth) GenerateJWTAccessCustom(ctx context.Context, req int, agent string, activityId string) (int, string, error) {
 	var tokenJWTAccess string
 	var err error
 
 	claimsAccess := origin.CustomClaims{
 		Data: model_actor.CustomClaimsJWT{
-			Role:      strconv.Itoa(int(req.RoleID)),
-			UserAgent: agent,
+			Role:       strconv.Itoa(req),
+			UserAgent:  agent,
+			ActivityId: activityId,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "login",
@@ -95,13 +117,14 @@ func (repo *ClientAuth) GenerateJWTAccessCustom(ctx context.Context, req model_a
 
 }
 
-func (repo *ClientAuth) GenerateJWTRefreshCustom(ctx context.Context, req model_actor.ModelActor, agent string) (int, string, string, *jwt.NumericDate, error) {
-	var tokenJWTAccess, tokenJWTRefresh string
+func (repo *ClientAuth) GenerateJWTRefreshCustom(ctx context.Context, req int, agent string, activityId string) (int, string, *jwt.NumericDate, error) {
+	var tokenJWTRefresh string
 	var err error
 	claimsRefresh := origin.CustomClaims{
 		Data: model_actor.CustomClaimsJWT{
-			Role:      strconv.Itoa(int(req.RoleID)),
-			UserAgent: agent,
+			Role:       strconv.Itoa(req),
+			UserAgent:  agent,
+			ActivityId: activityId,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "login",
@@ -116,28 +139,8 @@ func (repo *ClientAuth) GenerateJWTRefreshCustom(ctx context.Context, req model_
 	// Sign the token with the secret key
 	tokenJWTRefresh, err = tokenRefresh.SignedString([]byte(repo.conf.JWT.JwtRefresh))
 	if err != nil {
-		return http.StatusBadRequest, tokenJWTAccess, tokenJWTRefresh, nil, errors.New(err.Error())
+		return http.StatusBadRequest, tokenJWTRefresh, nil, errors.New(err.Error())
 	}
 
-	claimsAccess := origin.CustomClaims{
-		Data: model_actor.CustomClaimsJWT{
-			Role:      strconv.Itoa(int(req.RoleID)),
-			UserAgent: agent,
-		},
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "login",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(3 * time.Hour)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-	}
-
-	// Create the token
-	tokenAccess := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsAccess)
-
-	// Sign the token with the secret key
-	tokenJWTAccess, err = tokenAccess.SignedString([]byte(repo.conf.JWT.JwtAccess))
-	if err != nil {
-		return http.StatusBadRequest, tokenJWTAccess, tokenJWTRefresh, nil, errors.New(err.Error())
-	}
-	return http.StatusOK, tokenJWTAccess, tokenJWTRefresh, claimsRefresh.ExpiresAt, nil
+	return http.StatusOK, tokenJWTRefresh, claimsRefresh.ExpiresAt, nil
 }

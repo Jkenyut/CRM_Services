@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"crm_service/app/clients/repository/repository_auth"
 	"crm_service/app/config"
 	"crm_service/app/model/origin"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -10,65 +12,65 @@ import (
 	"time"
 )
 
-func Auth(c *gin.Context) {
-	bearerAccess := c.GetHeader("Authorization")
-	bearerRefresh := c.GetHeader("Refresh-Token")
-	tokenAccessAuth := strings.Split(bearerAccess, " ")
-	tokenRefreshAuth := strings.Split(bearerRefresh, " ")
+type InterfacesMiddlewareAuth interface {
+	Auth(c *gin.Context)
+}
 
-	var tokenAccessBearer, tokenRefreshBearer string
+type AuthMiddleware struct {
+	conf   *config.Config
+	client repository_auth.InterfaceAuth
+}
 
-	if len(tokenRefreshAuth) < 2 {
-		// Header is not in the expected format, set a origin token value or handle the situation
-		tokenRefreshBearer = "default_tokenBearer"
-	} else {
-		tokenRefreshBearer = tokenRefreshAuth[1]
+func NewMiddlewareAuth(conf *config.Config, client repository_auth.InterfaceAuth) InterfacesMiddlewareAuth {
+	return &AuthMiddleware{
+		conf:   conf,
+		client: client,
 	}
+}
 
-	if len(tokenAccessAuth) < 2 {
-		// Header is not in the expected format, set a origin token value or handle the situation
-		tokenAccessBearer = "default_tokenBearer"
-	} else {
-		tokenAccessBearer = tokenAccessAuth[1]
-	}
+func (m *AuthMiddleware) Auth(c *gin.Context) {
+	    // Extract the Authorization header
+    authHeader := c.GetHeader("Authorization")
+    if authHeader == "" {
+        c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("Authorization header is missing", http.StatusUnauthorized))
+        return
+    }
 
-	tokenRefresh, err := jwt.ParseWithClaims(tokenRefreshBearer, &origin.CustomClaims{}, func(tokenRefresh *jwt.Token) (interface{}, error) {
-		return []byte(config.GetConfig().JWT.JwtRefresh), nil
-	})
+    // Split the header into 'Bearer' and the token
+    headerParts := strings.Split(authHeader, " ")
+    if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+        c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("Invalid authorization header format", http.StatusUnauthorized))
+        return
+    }
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("signature token is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-	}
-	tokenAccess, err := jwt.ParseWithClaims(tokenAccessBearer, &origin.CustomClaims{}, func(tokenAccess *jwt.Token) (interface{}, error) {
-		return []byte(config.GetConfig().JWT.JwtAccess), nil
-	})
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("signature token is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
+    accessToken := headerParts[1]
 
-	}
-	claimsRefresh := tokenRefresh.Claims.(*origin.CustomClaims)
-	if tokenRefresh.Valid {
-		data := claimsRefresh.Data.(map[string]interface{})
-		if claimsRefresh.ExpiresAt.Before(time.Now()) {
-			c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("token refresh expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-		}
-		if data["user_agent"] != c.GetHeader("User-Agent") {
+	claimsAccess, err := m.ParseJWT(accessToken)
+	dataAccess := claimsAccess.Data.(map[string]interface{})
+
+	if dataAccess["user_agent"] != c.GetHeader("User-Agent") {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-		}
 	}
-
-	if claimsAccess, ok := tokenAccess.Claims.(*origin.CustomClaims); ok && tokenAccess.Valid {
-		data := claimsAccess.Data.(map[string]interface{})
-		if claimsAccess.ExpiresAt.Before(time.Now()) {
-			claimsRefresh
-			c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("token access expired", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-		}
-		if data["user_agent"] != c.GetHeader("User-Agent") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("signature agent is invalid", http.StatusUnauthorized)) // Stop execution of subsequent middleware or handlers
-
-		}
-		c.Set("envJWT", data)
+		c.Set("envJWT", dataAccess)
 	}
-
 	c.Next()
 }
+
+func (m *AuthMiddleware) ParseJWT(token string) (claims *origin.CustomClaims,err error){
+	    // Parse the access token
+    tokenAccess, err := jwt.ParseWithClaims(token, &origin.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+        return []byte(m.conf.JWT.JwtAccess), nil
+    })
+    if err != nil {
+        return claims,fmt.Errorf("Invalid access token signature")
+    }
+
+    // Validate the access token
+    claimsAccess, ok := tokenAccess.Claims.(*origin.CustomClaims)
+    if !ok || !tokenAccess.Valid || claimsAccess.ExpiresAt.Before(time.Now()) {
+       return  claims,fmt.Errorf("Invalid or expired access token")
+    }
+	return claimsAccess,nil
+}
+
+

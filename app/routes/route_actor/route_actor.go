@@ -2,6 +2,7 @@ package route_actor
 
 import (
 	"crm_service/app/controllers/contoller_actor"
+	"crm_service/app/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,12 +11,14 @@ type InterfaceRouteActor interface {
 }
 
 type RouterActor struct {
-	ctr contoller_actor.InterfaceControllerActor
+	ctr     contoller_actor.InterfaceControllerActor
+	authJWT middleware.InterfacesMiddlewareAuth
 }
 
-func NewRouteActor(ctr contoller_actor.InterfaceControllerActor) InterfaceRouteActor {
+func NewRouteActor(ctr contoller_actor.InterfaceControllerActor, authJWT middleware.InterfacesMiddlewareAuth) InterfaceRouteActor {
 	return &RouterActor{
-		ctr: ctr,
+		ctr:     ctr,
+		authJWT: authJWT,
 	}
 
 }

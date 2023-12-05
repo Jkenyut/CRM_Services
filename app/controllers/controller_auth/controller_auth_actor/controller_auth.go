@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -66,14 +67,23 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 		return
 	}
 
-	status, tokenJWTAccess, tokenJWTRefresh, ExpiredRefresh, err = ctr.client.GenerateJWTCustom(c, actorRepo, agent)
+	//uuid
+	uuid := uuid.New().String()
+	status, tokenJWTAccess, err = ctr.client.GenerateJWTAccessCustom(c, int(actorRepo.RoleID), agent, uuid)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)
 		return
 	}
 
-	status, err = ctr.client.InsertSession(c, tokenJWTRefresh, ExpiredRefresh.Time)
+	status, tokenJWTAccess, ExpiredRefresh, err = ctr.client.GenerateJWTRefreshCustom(c, int(actorRepo.RoleID), agent, uuid)
+	if status < 200 || status > 299 {
+		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
+		c.AbortWithStatusJSON(status, errorMessage)
+		return
+	}
+
+	status, err = ctr.client.InsertSession(c, uuid, tokenJWTRefresh, ExpiredRefresh.Time)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)
@@ -84,7 +94,6 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 	response = origin.DefaultSuccessResponseWithMessage("login success", status, tokenJWTAccess)
 
 	c.Header("Authorization", "Bearer "+fmt.Sprint(response.Data))
-	c.Header("Refresh-Token", "Bearer "+fmt.Sprint(response.Data))
 	c.JSON(status, response)
 }
 
