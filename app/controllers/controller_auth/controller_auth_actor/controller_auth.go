@@ -67,23 +67,23 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 		return
 	}
 
-	//uuid
-	uuid := uuid.New().String()
-	status, tokenJWTAccess, err = ctr.client.GenerateJWTAccessCustom(c, int(actorRepo.RoleID), agent, uuid)
+	//newUUID
+	newUUID := uuid.New().String()
+	status, tokenJWTAccess, err = ctr.client.GenerateJWTAccessCustom(c, int(actorRepo.RoleID), agent, newUUID)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)
 		return
 	}
 
-	status, tokenJWTAccess, ExpiredRefresh, err = ctr.client.GenerateJWTRefreshCustom(c, int(actorRepo.RoleID), agent, uuid)
+	status, tokenJWTRefresh, ExpiredRefresh, err = ctr.client.GenerateJWTRefreshCustom(c, int(actorRepo.RoleID), agent, newUUID)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)
 		return
 	}
 
-	status, err = ctr.client.InsertSession(c, uuid, tokenJWTRefresh, ExpiredRefresh.Time)
+	status, err = ctr.client.InsertSession(c, newUUID, tokenJWTRefresh, ExpiredRefresh.Time)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)

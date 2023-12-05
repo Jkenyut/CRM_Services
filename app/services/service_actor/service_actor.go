@@ -16,7 +16,7 @@ func NewServiceActor(router *gin.Engine, conf *config.Config, conn connection.In
 	clientActor := repository_actor.NewClientActor(conf, conn)
 	controllerActor := contoller_actor.NewControllerActor(clientActor, validator)
 	clientAuth := repository_auth.NewClientAuth(conf, conn)
-	AuthJWTContoller := middleware.NewMiddlewareAuth(conf, clientAuth)
-	serviceActor := route_actor.NewRouteActor(controllerActor, AuthJWTContoller)
+	AuthJWTController := middleware.NewMiddlewareAuth(conf, clientAuth)
+	serviceActor := route_actor.NewRouteActor(controllerActor, AuthJWTController)
 	serviceActor.Handle(router)
 }

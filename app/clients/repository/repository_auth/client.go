@@ -54,7 +54,7 @@ func (repo *ClientAuth) InsertSession(ctx context.Context, activity_id string, t
 	var args []interface{}
 	args = append(args, activity_id, tokenRefresh, expiredRefresh, tokenRefresh)
 
-	queryCreateActor := "INSERT INTO session(activity_id,jwt_refresh, expired) SELECT ?,?,? WHERE NOT EXISTS (SELECT jwt FROM session WHERE jwt=?)"
+	queryCreateActor := "INSERT INTO sessions(activity_id,jwt_refresh, expired) SELECT ?,?,? WHERE NOT EXISTS (SELECT jwt_refresh FROM session WHERE jwt_refresh=?)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, args...)
 
 	//check
@@ -75,7 +75,7 @@ func (repo *ClientAuth) CheckSession(ctx context.Context, activity_id string) (s
 	var args []interface{}
 	args = append(args, activity_id)
 
-	queryCreateActor := "SELECT jwt_refresh FROM session WHERE activity_id = ?"
+	queryCreateActor := "SELECT jwt_refresh FROM sessions WHERE activity_id = ?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryCreateActor, args...).Scan(&out)
 
 	//check
