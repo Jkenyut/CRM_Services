@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strconv"
 )
 
 type ControllerAuth struct {
@@ -30,8 +30,8 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 	var response origin.DefaultResponse
 	var errorMessage origin.DefaultResponse
 	var status int
-	var tokenJWTAccess, tokenJWTRefresh string
-	var ExpiredRefresh *jwt.NumericDate
+	var tokenJWTAccess string
+	var claimsAccess origin.CustomClaims
 
 	// get header user-agent
 	agent := c.GetHeader("User-Agent")
@@ -69,21 +69,22 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 
 	//newUUID
 	newUUID := uuid.New().String()
-	status, tokenJWTAccess, err = ctr.client.GenerateJWTAccessCustom(c, int(actorRepo.RoleID), agent, newUUID)
+	externalID := uuid.New().String()
+	status, tokenJWTAccess, claimsAccess, err = ctr.client.GenerateJWTAccessCustom(c, strconv.Itoa(int(actorRepo.RoleID)), agent, newUUID, externalID)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)
 		return
 	}
 
-	status, tokenJWTRefresh, ExpiredRefresh, err = ctr.client.GenerateJWTRefreshCustom(c, int(actorRepo.RoleID), agent, newUUID)
-	if status < 200 || status > 299 {
-		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
-		c.AbortWithStatusJSON(status, errorMessage)
-		return
-	}
+	//status, tokenJWTRefresh, ExpiredRefresh, err = ctr.client.GenerateJWTRefreshCustom(c, strconv.Itoa(int(actorRepo.RoleID)), agent, newUUID)
+	//if status < 200 || status > 299 {
+	//	errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
+	//	c.AbortWithStatusJSON(status, errorMessage)
+	//	return
+	//}
 
-	status, err = ctr.client.InsertSession(c, newUUID, tokenJWTRefresh, ExpiredRefresh.Time)
+	status, err = ctr.client.InsertSession(c, newUUID, agent, claimsAccess)
 	if status < 200 || status > 299 {
 		errorMessage = origin.DefaultErrorResponseWithMessage(err.Error(), status)
 		c.AbortWithStatusJSON(status, errorMessage)

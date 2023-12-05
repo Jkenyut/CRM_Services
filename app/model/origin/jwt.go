@@ -1,6 +1,9 @@
 package origin
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"github.com/golang-jwt/jwt/v5"
+	"time"
+)
 
 type CustomClaims struct {
 	Data any
@@ -8,7 +11,8 @@ type CustomClaims struct {
 }
 
 type JWTModel struct {
-	ActivityId     string `gorm:"column:activity_id"`
-	JWTRefresh     string `gorm:"column:jwt_refresh"`
-	ExpiredRefresh string `gorm:"column:expired"`
+	ActivityId string    `gorm:"column:activity_id"`
+	Agent      string    `gorm:"column:agent"`
+	IssuedAt   time.Time `gorm:"column:issued_at"`
+	ExpiredAt  time.Time `gorm:"column:expired_at"`
 }

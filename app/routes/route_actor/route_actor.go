@@ -20,21 +20,19 @@ func NewRouteActor(ctr contoller_actor.InterfaceControllerActor, authJWT middlew
 		ctr:     ctr,
 		authJWT: authJWT,
 	}
-
 }
 
 func (r *RouterActor) Handle(router *gin.Engine) {
 	basePath := "v1/actor"
-
 	actorRouter := router.Group(basePath)
 	//
 	actorRouter.POST("/register",
 		r.ctr.CreateActor,
 	)
 	//
-	//actorRouter.GET("/:id",
-	//	r.actorRequestHandler.GetActorById,
-	//)
+	actorRouter.GET("/:id", r.authJWT.Auth,
+		r.ctr.GetActorById,
+	)
 	//actorRouter.GET("",
 	//	r.actorRequestHandler.GetAllActor,
 	//)

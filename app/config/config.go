@@ -30,14 +30,16 @@ type SQLConfig struct {
 // please edit in here
 type Config struct {
 	Database struct {
-		CRM     SQLConfig `yaml:"crm"`
-		Timeout int       `yaml:"timeout" default:"30000"`
+		CRM     SQLConfig `yaml:"CRM"`
+		Timeout int       `yaml:"TIMEOUT" default:"30000"`
 	} `yaml:"database"`
 	JWT struct {
-		JwtAccess  string `yaml:"JWTACCESS" default:"random"`
-		JwtRefresh string `yaml:"JWTREFRESH" default:"random"`
+		JwtAccess         string `yaml:"JWTACCESS" default:"random"`
+		JwtRefresh        string `yaml:"JWTREFRESH" default:"random"`
+		ExpiredJWT        int    `yaml:"EXPIREDJWT" default:"1"`
+		ExpiredRefreshJWT int    `yaml:"EXPIREDREFRESHJWT" default:"24"`
 	}
-	Mock bool `yaml:"mock"`
+	Mock bool `yaml:"MOCK"`
 }
 
 func init() {

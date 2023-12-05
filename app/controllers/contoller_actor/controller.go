@@ -2,6 +2,7 @@ package contoller_actor
 
 import (
 	"crm_service/app/clients/repository/repository_actor"
+	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/model_actor"
 	"crm_service/app/model/origin"
 	"crm_service/app/utils/helper"
@@ -16,6 +17,7 @@ import (
 type ControllerActor struct {
 	client    repository_actor.InterfaceRepositoryActor
 	validator *validator.Validate
+	pipeline  pipeline.Pipeline
 }
 
 func NewControllerActor(client repository_actor.InterfaceRepositoryActor, validate *validator.Validate) InterfaceControllerActor {
@@ -26,20 +28,21 @@ func NewControllerActor(client repository_actor.InterfaceRepositoryActor, valida
 }
 
 func (ctr *ControllerActor) CreateActor(c *gin.Context) {
-	// get environment
-	//envJWT, _ := c.Get("envJWT")
-	//setJWT := envJWT.(map[string]interface{})
-	//
-	//if setJWT["role"] != "1" {
-	//	c.AbortWithStatusJSON(http.StatusUnauthorized, origin.DefaultErrorResponseWithMessage("Account Not Authorization", http.StatusUnauthorized))
-	//	return
-	//}
+	//get environment
+	envJWT, _ := c.Get("envJWT")
+	setJWT := envJWT.(origin.CustomClaims)
+	audience, _ := setJWT.GetAudience()
+
+	if audience[0] != "1" {
+		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "Account Not Authorization")
+		return
+	}
 
 	// bind to json
 	var request model_actor.RequestActor
-	err := c.Bind(&request)
+	err := c.BindJSON(&request)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		pipeline.AbortWithStatusJSON(c, http.StatusBadRequest, "required not valid")
 		return
 	}
 
@@ -61,7 +64,7 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	// create repository-model_actor
 	status, err = ctr.client.CreateActor(c, &request)
 	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, origin.DefaultErrorResponseWithMessage(err.Error(), status))
+		ctr.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
 
@@ -71,25 +74,27 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	responseActor.RoleID = 2
 	responseActor.Active = "false"
 
-	c.JSON(status, origin.DefaultSuccessResponseWithMessage("actor created", status, responseActor))
+	ctr.JSON(c, status, "actor created", responseActor)
 }
 
 func (ctr *ControllerActor) GetActorById(c *gin.Context) {
+
 	var actorRepo model_actor.ModelActor
+	var status int
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+		ctr.pipeline.AbortWithStatusJSON(http.StatusBadRequest, "must unsigned number")
 		return
 	}
-	status, err := ctr.client.GetActorById(c, id, &actorRepo)
+	status, err = ctr.client.GetActorById(c, id, &actorRepo)
 	//check status
 	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, origin.DefaultErrorResponseWithMessage(err.Error(), status))
+		ctr.pipeline.AbortWithStatusJSON(status, err.Error())
 		return
 	}
 
-	c.JSON(status, origin.DefaultSuccessResponseWithMessage("actor created", status, actorRepo))
+	ctr.pipeline.JSON(status, "actor created", actorRepo)
 }
 
 //	func (h ControllerActor) GetAllActor(c *gin.Context) {

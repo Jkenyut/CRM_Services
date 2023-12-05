@@ -41,9 +41,8 @@ type FindAllActor struct {
 }
 
 type CustomClaimsJWT struct {
-	Role       string `json:"role,omitempty"`
-	UserAgent  string `json:"user_agent,omitempty"`
-	ActivityId string `json:"activity_id"`
+	Role      string `json:"role,omitempty"`
+	UserAgent string `json:"user_agent,omitempty"`
 }
 
 type ResponseActor struct {
