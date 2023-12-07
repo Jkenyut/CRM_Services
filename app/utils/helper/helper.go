@@ -1,17 +1,14 @@
 package helper
 
 import (
-	"crm_service/app/model/origin"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"net/http"
 	"time"
 )
 
-func RequestValidate(err error) (int, origin.DefaultResponse) {
-	var messageErr string
+func RequestValidate(err error) (messageErr string) {
 	for _, messageError := range err.(validator.ValidationErrors) {
 		if messageError.Tag() != "" {
 			//message
@@ -19,7 +16,7 @@ func RequestValidate(err error) (int, origin.DefaultResponse) {
 		}
 		break
 	}
-	return http.StatusPreconditionFailed, origin.DefaultErrorResponseWithMessage(messageErr, http.StatusPreconditionFailed)
+	return messageErr
 }
 
 func ConvertTimeToWIB(t time.Time) string {

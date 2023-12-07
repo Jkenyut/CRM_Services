@@ -17,7 +17,6 @@ import (
 type ControllerActor struct {
 	client    repository_actor.InterfaceRepositoryActor
 	validator *validator.Validate
-	pipeline  pipeline.Pipeline
 }
 
 func NewControllerActor(client repository_actor.InterfaceRepositoryActor, validate *validator.Validate) InterfaceControllerActor {
@@ -50,7 +49,7 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	err = ctr.validator.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.RequestValidate(err))
+		c.AbortWithStatusJSON(http.StatusPreconditionFailed, helper.RequestValidate(err))
 		return
 	}
 
@@ -84,17 +83,17 @@ func (ctr *ControllerActor) GetActorById(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err != nil {
-		ctr.pipeline.AbortWithStatusJSON(http.StatusBadRequest, "must unsigned number")
+		pipeline.AbortWithStatusJSON(c, http.StatusBadRequest, "must unsigned number")
 		return
 	}
 	status, err = ctr.client.GetActorById(c, id, &actorRepo)
 	//check status
 	if status < 200 || status > 299 {
-		ctr.pipeline.AbortWithStatusJSON(status, err.Error())
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
 
-	ctr.pipeline.JSON(status, "actor created", actorRepo)
+	pipeline.JSON(c, status, "actor created", actorRepo)
 }
 
 //	func (h ControllerActor) GetAllActor(c *gin.Context) {
@@ -135,7 +134,7 @@ func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
 	err = ctr.validator.Struct(request)
 	if err != nil {
 		// Validation failed
-		c.AbortWithStatusJSON(helper.RequestValidate(err))
+		pipeline.AbortWithStatusJSON(c, http.StatusPreconditionFailed, helper.RequestValidate(err))
 		return
 	}
 
