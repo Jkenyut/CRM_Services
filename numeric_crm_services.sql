@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 01, 2023 at 02:51 AM
--- Server version: 8.0.30
+-- Generation Time: Dec 07, 2023 at 01:13 AM
+-- Server version: 8.2.0
 -- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `crm_bootcamp`
+-- Database: `numeric_crm_services`
 --
 
 -- --------------------------------------------------------
@@ -67,19 +67,19 @@ INSERT INTO `actors` (`id`, `username`, `password`, `role_id`, `verified`, `acti
 -- --------------------------------------------------------
 
 --
--- Table structure for table `actor_role`
+-- Table structure for table `actor_roles`
 --
 
-CREATE TABLE `actor_role` (
+CREATE TABLE `actor_roles` (
   `id` int UNSIGNED NOT NULL,
   `role_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `actor_role`
+-- Dumping data for table `actor_roles`
 --
 
-INSERT INTO `actor_role` (`id`, `role_name`) VALUES
+INSERT INTO `actor_roles` (`id`, `role_name`) VALUES
 (2, 'admin'),
 (1, 'superadmin');
 
@@ -115,13 +115,34 @@ INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `avatar`, `cr
 -- --------------------------------------------------------
 
 --
--- Table structure for table `session`
+-- Table structure for table `sessions`
 --
 
-CREATE TABLE `session` (
-  `jwt` varchar(255) NOT NULL,
-  `expired` timestamp NULL DEFAULT NULL
+CREATE TABLE `sessions` (
+  `activity_id` varchar(64) NOT NULL,
+  `agent` varchar(255) NOT NULL,
+  `issued_at` timestamp NULL DEFAULT NULL,
+  `expired_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`activity_id`, `agent`, `issued_at`, `expired_at`) VALUES
+('23495761-54de-4b5d-b994-530d4d9c70f1', 'PostmanRuntime/7.35.0', '2023-12-06 11:44:40', '2023-12-06 12:44:41'),
+('2a209bfd-ea0e-44e1-bcb4-bdd9bea3eaf4', 'PostmanRuntime/7.35.0', '2023-12-06 11:57:06', '2023-12-06 12:57:07'),
+('3e48477e-0ea4-4ee7-9036-3c2707f84ef7', 'PostmanRuntime/7.35.0', '2023-12-06 11:25:56', '2023-12-07 11:25:56'),
+('54223001-966d-4a2a-896e-4a11ae6635bd', 'PostmanRuntime/7.35.0', '2023-12-06 13:21:57', '2023-12-07 13:21:57'),
+('545ae3c3-28da-4ec6-a38d-fc0364f5a6a6', 'PostmanRuntime/7.35.0', '2023-12-06 13:12:50', '2023-12-07 13:12:50'),
+('8959cccd-3725-4ab7-8267-962847cec5b5', 'PostmanRuntime/7.35.0', '2023-12-06 14:55:31', '2023-12-07 14:55:32'),
+('8d4e99d8-5b11-4bc8-9edf-528168473b3f', 'PostmanRuntime/7.35.0', '2023-12-06 11:42:15', '2023-12-06 12:42:16'),
+('a28910fe-a69c-4328-88c2-43aa74c25772', 'PostmanRuntime/7.35.0', '2023-12-06 11:26:21', '2023-12-07 11:26:21'),
+('a4725f50-c94a-4049-8bc2-4c02507345cb', 'PostmanRuntime/7.35.0', '2023-12-06 11:18:30', '2023-12-07 11:18:30'),
+('a86d5f35-5578-4230-afb8-4abacc34e922', 'PostmanRuntime/7.35.0', '2023-12-06 14:51:12', '2023-12-07 14:51:13'),
+('c921e2c9-e01b-4095-938f-9f060aad6c27', 'PostmanRuntime/7.35.0', '2023-12-06 13:30:46', '2023-12-07 13:30:46'),
+('d71ff4b0-312e-4898-ac08-626cb0463525', 'PostmanRuntime/7.35.0', '2023-12-06 13:39:33', '2023-12-07 13:39:34'),
+('fb794116-d469-4cdc-b06e-de675e0da24e', 'PostmanRuntime/7.35.0', '2023-12-06 13:11:55', '2023-12-06 14:11:55');
 
 --
 -- Indexes for dumped tables
@@ -137,9 +158,9 @@ ALTER TABLE `actors`
   ADD KEY `idx_username_actor` (`username`);
 
 --
--- Indexes for table `actor_role`
+-- Indexes for table `actor_roles`
 --
-ALTER TABLE `actor_role`
+ALTER TABLE `actor_roles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `role_name` (`role_name`);
 
@@ -154,11 +175,11 @@ ALTER TABLE `customers`
   ADD KEY `customer_index_email` (`email`);
 
 --
--- Indexes for table `session`
+-- Indexes for table `sessions`
 --
-ALTER TABLE `session`
-  ADD PRIMARY KEY (`jwt`),
-  ADD UNIQUE KEY `jwt` (`jwt`);
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`activity_id`),
+  ADD UNIQUE KEY `activity` (`activity_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -171,9 +192,9 @@ ALTER TABLE `actors`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- AUTO_INCREMENT for table `actor_role`
+-- AUTO_INCREMENT for table `actor_roles`
 --
-ALTER TABLE `actor_role`
+ALTER TABLE `actor_roles`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -190,7 +211,7 @@ ALTER TABLE `customers`
 -- Constraints for table `actors`
 --
 ALTER TABLE `actors`
-  ADD CONSTRAINT `actor_role` FOREIGN KEY (`role_id`) REFERENCES `actor_role` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `actor_role` FOREIGN KEY (`role_id`) REFERENCES `actor_roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
