@@ -19,12 +19,10 @@ func RequestValidate(err error) (messageErr string) {
 	return messageErr
 }
 
-func ConvertTimeToWIB(t time.Time) string {
-	var format string
+func ConvertTimeToWIB(t time.Time) (format string) {
 	if t.IsZero() {
 		return format
 	}
-
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	format = t.In(loc).Format("02-01-2006 15:04:05 MST")
 	return format

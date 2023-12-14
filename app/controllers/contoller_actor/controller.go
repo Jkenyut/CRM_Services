@@ -6,6 +6,7 @@ import (
 	"crm_service/app/model/model_actor"
 	"crm_service/app/model/origin"
 	"crm_service/app/utils/helper"
+	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_response"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
@@ -63,7 +64,7 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	// create repository-model_actor
 	status, err = ctr.client.CreateActor(c, &request)
 	if status < 200 || status > 299 {
-		ctr.AbortWithStatusJSON(c, status, err.Error())
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
 
@@ -73,7 +74,7 @@ func (ctr *ControllerActor) CreateActor(c *gin.Context) {
 	responseActor.RoleID = 2
 	responseActor.Active = "false"
 
-	ctr.JSON(c, status, "actor created", responseActor)
+	pipeline.JSON(c, status, "actor created", responseActor)
 }
 
 func (ctr *ControllerActor) GetActorById(c *gin.Context) {
@@ -101,7 +102,7 @@ func (ctr *ControllerActor) GetActorById(c *gin.Context) {
 //		username := c.DefaultQuery("username", "")
 //
 //		if err != nil {
-//			c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
+//			c.AbortWithStatusJSON(http.StatusBadRequest, model_response.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
 //			return
 //		}
 //
@@ -124,7 +125,7 @@ func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -151,7 +152,7 @@ func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
 	responseActor.Verified = request.Verified
 	responseActor.Active = request.Active
 
-	c.JSON(http.StatusOK, origin.DefaultSuccessResponseWithMessage("Update data actor", status, responseActor))
+	c.JSON(http.StatusOK, libs_model_response.DefaultSuccessResponseWithMessage("Update data actor", status, responseActor))
 }
 
 func (ctr *ControllerActor) DeleteActorById(c *gin.Context) {
@@ -164,7 +165,7 @@ func (ctr *ControllerActor) DeleteActorById(c *gin.Context) {
 	}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.AbortWithStatusJSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -174,7 +175,7 @@ func (ctr *ControllerActor) DeleteActorById(c *gin.Context) {
 		c.AbortWithStatusJSON(status, errMessage)
 		return
 	}
-	c.JSON(status, origin.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
+	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
 }
 
 func (ctr *ControllerActor) ActivateActorById(c *gin.Context) {
@@ -187,7 +188,7 @@ func (ctr *ControllerActor) ActivateActorById(c *gin.Context) {
 	//}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -197,7 +198,7 @@ func (ctr *ControllerActor) ActivateActorById(c *gin.Context) {
 		c.AbortWithStatusJSON(status, errMessage)
 		return
 	}
-	c.JSON(status, origin.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
+	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
 }
 
 func (ctr *ControllerActor) DeactivateActorById(c *gin.Context) {
@@ -210,7 +211,7 @@ func (ctr *ControllerActor) DeactivateActorById(c *gin.Context) {
 	//}
 	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, origin.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+		c.JSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
 		return
 	}
 
@@ -220,5 +221,5 @@ func (ctr *ControllerActor) DeactivateActorById(c *gin.Context) {
 		c.AbortWithStatusJSON(status, errMessage)
 		return
 	}
-	c.JSON(status, origin.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
+	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
 }

@@ -12,7 +12,7 @@ import (
 
 func NewServiceAuth(router *gin.Engine, conf *config.Config, conn connection.InterfaceConnection, validator *validator.Validate) {
 	clientAuth := repository_auth.NewClientAuth(conf, conn)
-	controllerAuth := controller_auth_actor.NewControllerAuth(clientAuth, validator)
+	controllerAuth := controller_auth_actor.NewControllerAuth(clientAuth, validator, conf)
 	serviceAuth := route_auth.NewRouteAuth(controllerAuth)
 	serviceAuth.Handle(router)
 }
