@@ -37,7 +37,7 @@ func ValidateJWT(c *gin.Context) bool {
 		AbortWithStatusJSON(c, http.StatusForbidden, "env jwt not found")
 		return true
 	}
-	setJWT := envJWT.(libs_model_jwt.CustomClaims)
+	setJWT := envJWT.(*libs_model_jwt.CustomClaims)
 	audience, _ := setJWT.GetAudience()
 	if len(audience) == 0 || audience[0] != "1" {
 		AbortWithStatusJSON(c, http.StatusUnauthorized, "Account Not Authorized")

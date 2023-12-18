@@ -5,6 +5,7 @@ import (
 	"crm_service/app/config"
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/origin"
+	"fmt"
 	"github.com/Jkenyut/libs-numeric-go/libs_auth/libs_auth_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_response"
@@ -57,16 +58,19 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 	})
 
 	if err != nil && err.Error() == "token signature is invalid: signature is invalid" {
-
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, err.Error())
 		return
 	}
+	fmt.Print(tokenAccess)
 
-	claimsAccess, ok := tokenAccess.Claims.(*libs_model_jwt.CustomClaims)
+	claimsAccess, ok := tokenAccess.Claims.(*libs_model_jwt.CustomClaims) // Use pointer type here
+	fmt.Println(claimsAccess)
 	if !ok {
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "mapping jwt failed")
 		return
 	}
+
+	fmt.Print("dubdubdu")
 
 	externalID := uuid.New().String()
 	subject, _ := claimsAccess.GetSubject()
@@ -77,7 +81,9 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		return
 	}
 
-	if claimsAccess.ExpiresAt.Before(time.Now()) {
+	fmt.Println("okokokokokok")
+	ExpiresAt, _ := claimsAccess.GetExpirationTime()
+	if ExpiresAt.Before(time.Now()) {
 		var status int
 		var JwtRefresh origin.JWTModel
 
@@ -93,9 +99,8 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		}
 
 		var newTokenAccess string
-		var claimsNewAccess libs_model_jwt.CustomClaims
 		audience = []string{audience[0], audience[1]}
-		newTokenAccess, claimsNewAccess, err = m.libsAuth.GenerateJWTAccessCustom(c, "login", audience, subject, externalID, "")
+		newTokenAccess, claimsAccess, err = m.libsAuth.GenerateJWTAccessCustom(c, "login", audience, subject, externalID, "")
 
 		if err != nil || status < 200 || status > 299 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, libs_model_response.DefaultErrorResponseWithMessage("Failed to generate new access token", http.StatusUnauthorized))
@@ -103,13 +108,12 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		}
 
 		c.Header("Authorization", newTokenAccess)
-		c.Set("envJWT", claimsNewAccess)
-		c.Next()
 	} else if audience[1] != agent {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, libs_model_response.DefaultErrorResponseWithMessage("User agent mismatch", http.StatusUnauthorized))
 		return
 	}
-
+	fmt.Println("hahahahah")
 	c.Set("envJWT", claimsAccess)
+	fmt.Println("heheheh")
 	c.Next()
 }

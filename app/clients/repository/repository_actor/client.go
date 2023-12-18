@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -135,13 +136,16 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,active=? WHERE id=?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, args...)
 	if result.Error != nil {
+		//username already exist
+		if strings.Contains(result.Error.Error(), "Error 1062 (23000)") {
+			return http.StatusBadRequest, errors.New("username already exist")
+		}
 		//error mysql
 		return http.StatusInternalServerError, errors.New("failed exec query UpdateActorById")
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("cannot update because username already exist")
+		return http.StatusNotFound, errors.New("data not found")
 	}
-
 	return http.StatusAccepted, nil
 }
 

@@ -99,7 +99,7 @@ func (ctr *ControllerAuth) LogoutActor(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, http.StatusForbidden, "env jwt not found")
 		return
 	}
-	setJWT := envJWT.(libs_model_jwt.CustomClaims)
+	setJWT := envJWT.(*libs_model_jwt.CustomClaims)
 	//req header and del
 
 	status, err := ctr.client.DeleteSession(c, setJWT.Subject)

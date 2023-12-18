@@ -45,7 +45,7 @@ func (repo *ClientAuth) LoginActor(ctx context.Context, req model_actor.RequestA
 	return http.StatusOK, nil
 }
 
-func (repo *ClientAuth) InsertSession(ctx context.Context, activityId string, agent string, claimRefresh libs_model_jwt.CustomClaims) (status int, error error) {
+func (repo *ClientAuth) InsertSession(ctx context.Context, activityId string, agent string, claimRefresh *libs_model_jwt.CustomClaims) (status int, error error) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
@@ -97,7 +97,6 @@ func (repo *ClientAuth) DeleteSession(ctx context.Context, activityId string) (s
 
 	queryDeleteSession := "DELETE FROM sessions WHERE activity_id = ?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeleteSession, args...)
-
 	//check
 	if result.Error != nil {
 		return http.StatusInternalServerError, errors.New("failed exec query Delete Session")
@@ -105,5 +104,13 @@ func (repo *ClientAuth) DeleteSession(ctx context.Context, activityId string) (s
 		// Username does not exist, proceed with creating the model
 		return http.StatusNotFound, errors.New(" authentication failed,refresh token is not found.")
 	}
+
+	queryDeleteAllSession := "DELETE FROM sessions WHERE expired_at < ?"
+	result = repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeleteAllSession, time.Now())
+	//check
+	if result.Error != nil {
+		return http.StatusInternalServerError, errors.New("failed exec query Delete ALL Session")
+	}
+
 	return http.StatusAccepted, nil
 }

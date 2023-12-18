@@ -16,6 +16,8 @@ require (
 	gorm.io/gorm v1.25.4
 )
 
+replace github.com/Jkenyut/libs-numeric-go v1.0.5 => ../libs-numeric-go
+
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
