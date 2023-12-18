@@ -1,7 +1,7 @@
 github.com/JGLTechnologies/gin-rate-limit v1.5.4 h1:1hIaXIdGM9MZFZlXgjWJLpxaK0WHEa5MeloK49nmQsc=
 github.com/JGLTechnologies/gin-rate-limit v1.5.4/go.mod h1:mGEhNzlHEg/Tk+KH/mKylZLTfDjACnx7MVYaAlj07eU=
-github.com/Jkenyut/libs-numeric-go v1.0.3 h1:+eH2n2ZdKS/yQlZ5s99Boj4XAxT552L0MKRCKFd2dzk=
-github.com/Jkenyut/libs-numeric-go v1.0.3/go.mod h1:vZ6ef0+wekcUWUwGx7vkQbVhjygogT748uihuJU0XiU=
+github.com/Jkenyut/libs-numeric-go v1.0.5 h1:CwVQ6YdT+2w50W3TalV9i45Z3WfMdoFiRUPcqvBaiRA=
+github.com/Jkenyut/libs-numeric-go v1.0.5/go.mod h1:vZ6ef0+wekcUWUwGx7vkQbVhjygogT748uihuJU0XiU=
 github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
 github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/bsm/ginkgo/v2 v2.5.0 h1:aOAnND1T40wEdAtkGSkvSICWeQ8L3UASX7YVCqQx+eQ=

@@ -5,7 +5,6 @@ import (
 	"crm_service/app/config"
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/origin"
-	"fmt"
 	"github.com/Jkenyut/libs-numeric-go/libs_auth/libs_auth_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_response"
@@ -22,16 +21,16 @@ type InterfacesMiddlewareAuth interface {
 }
 
 type AuthMiddleware struct {
-	conf      *config.Config
-	client    repository_auth.InterfaceAuth
-	libs_auth libs_auth_jwt.InterfacesAuthJWT
+	conf     *config.Config
+	client   repository_auth.InterfaceAuth
+	libsAuth libs_auth_jwt.InterfacesAuthJWT
 }
 
 func NewMiddlewareAuth(conf *config.Config, client repository_auth.InterfaceAuth) InterfacesMiddlewareAuth {
 	return &AuthMiddleware{
-		conf:      conf,
-		client:    client,
-		libs_auth: libs_auth_jwt.NewClientAuthJWT(conf.JWT),
+		conf:     conf,
+		client:   client,
+		libsAuth: libs_auth_jwt.NewClientAuthJWT(conf.JWT),
 	}
 }
 
@@ -44,7 +43,7 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "Authorization header is missing")
 		return
 	}
-	fmt.Println("nen")
+
 	headerParts := strings.Split(authHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "Invalid authorization header format")
@@ -94,8 +93,9 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		}
 
 		var newTokenAccess string
+		var claimsNewAccess libs_model_jwt.CustomClaims
 		audience = []string{audience[0], audience[1]}
-		newTokenAccess, *claimsAccess, err = m.libs_auth.GenerateJWTAccessCustom(c, "login", audience, subject, externalID, "")
+		newTokenAccess, claimsNewAccess, err = m.libsAuth.GenerateJWTAccessCustom(c, "login", audience, subject, externalID, "")
 
 		if err != nil || status < 200 || status > 299 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, libs_model_response.DefaultErrorResponseWithMessage("Failed to generate new access token", http.StatusUnauthorized))
@@ -103,7 +103,8 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		}
 
 		c.Header("Authorization", newTokenAccess)
-
+		c.Set("envJWT", claimsNewAccess)
+		c.Next()
 	} else if audience[1] != agent {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, libs_model_response.DefaultErrorResponseWithMessage("User agent mismatch", http.StatusUnauthorized))
 		return

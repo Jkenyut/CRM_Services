@@ -33,22 +33,15 @@ func (r *RouterActor) Handle(router *gin.Engine) {
 	actorRouter.GET("/:id", r.authJWT.Auth,
 		r.ctr.GetActorById,
 	)
-	//actorRouter.GET("",
-	//	r.actorRequestHandler.GetAllActor,
-	//)
-	//
-	//actorRouter.PUT("/:id",
-	//	r.actorRequestHandler.UpdateActorById,
-	//)
-	//actorRouter.DELETE("/:id",
-	//	r.actorRequestHandler.DeleteActorById,
-	//)
-	//actorRouter.GET("/:id/activate",
-	//	r.actorRequestHandler.ActivateActorById)
-	//
-	//actorRouter.GET("/:id/deactivate",
-	//	r.actorRequestHandler.DeactivateActorById)
+	actorRouter.GET("", r.authJWT.Auth,
+		r.ctr.GetAllActor,
+	)
 
-	//router.GET("v1/repository-entity_actor/logout",
-	//	r.actorRequestHandler.LogoutActor)
+	actorRouter.PUT("/:id", r.authJWT.Auth,
+		r.ctr.UpdateActorById,
+	)
+
+	actorRouter.DELETE("/:id", r.authJWT.Auth,
+		r.ctr.DeleteActorById,
+	)
 }

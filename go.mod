@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/JGLTechnologies/gin-rate-limit v1.5.4
-	github.com/Jkenyut/libs-numeric-go v1.0.3
+	github.com/Jkenyut/libs-numeric-go v1.0.5
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1

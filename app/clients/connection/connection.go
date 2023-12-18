@@ -35,7 +35,8 @@ func (c *ManagerConnection) GetConfigConnection() *config.Config {
 }
 
 func (c *ManagerConnection) Init(isuat bool) {
-	if len(c.config.KeyAES) != 16 || len(c.config.KeyAES) != 24 || len(c.config.KeyAES) != 32 {
+
+	if len(c.config.KeyAES) != 16 && len(c.config.KeyAES) != 24 && len(c.config.KeyAES) != 32 {
 		panic("AES KEY IS NOT MATCH PLEASE USING 16,24,32")
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.GetConfigConnection().Database.CRM.Username, c.GetConfigConnection().Database.CRM.Password, c.GetConfigConnection().Database.CRM.Host, c.GetConfigConnection().Database.CRM.Port, c.GetConfigConnection().Database.CRM.Database)

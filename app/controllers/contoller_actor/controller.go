@@ -4,14 +4,11 @@ import (
 	"crm_service/app/clients/repository/repository_actor"
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/model_actor"
-	"crm_service/app/model/origin"
 	"crm_service/app/utils/helper"
-	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_response"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -27,199 +24,165 @@ func NewControllerActor(client repository_actor.InterfaceRepositoryActor, valida
 	}
 }
 
+const bcryptDefaultCost = 12
+const defaultRoleID = 2
+
 func (ctr *ControllerActor) CreateActor(c *gin.Context) {
-	//get environment
-	envJWT, _ := c.Get("envJWT")
-	setJWT := envJWT.(origin.CustomClaims)
-	audience, _ := setJWT.GetAudience()
-
-	if audience[0] != "1" {
-		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "Account Not Authorization")
-		return
+	if valid := pipeline.ValidateJWT(c); valid {
+		return // Error response handled in validateJWT
 	}
 
-	// bind to json
 	var request model_actor.RequestActor
-	err := c.BindJSON(&request)
+	if valid := pipeline.BindAndValidateRequest(c, ctr.validator, &request); valid {
+		return // Error response handled in bindAndValidateRequest
+	}
+
+	hashingPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcryptDefaultCost)
 	if err != nil {
-		pipeline.AbortWithStatusJSON(c, http.StatusBadRequest, "required not valid")
+		pipeline.AbortWithStatusJSON(c, http.StatusPreconditionFailed, "Precondition failed Request")
 		return
 	}
 
-	//validate
-	err = ctr.validator.Struct(request)
-	if err != nil {
-		// Validation failed
-		c.AbortWithStatusJSON(http.StatusPreconditionFailed, helper.RequestValidate(err))
-		return
-	}
-
-	//controllers
-
-	//hashing password
-	hashingPassword, _ := bcrypt.GenerateFromPassword([]byte(request.Password), 12)
 	request.Password = string(hashingPassword)
 
-	var status int
-	// create repository-model_actor
-	status, err = ctr.client.CreateActor(c, &request)
-	if status < 200 || status > 299 {
+	status, err := ctr.client.CreateActor(c, &request)
+	if err != nil || !helper.IsSuccessStatus(status) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
 
-	var responseActor model_actor.ResponseActor
-	responseActor.Username = request.Username
-	responseActor.CreatedAt = helper.ConvertTimeToWIB(time.Now())
-	responseActor.RoleID = 2
-	responseActor.Active = "false"
+	response := model_actor.ResponseActor{
+		Username:  request.Username,
+		CreatedAt: helper.ConvertTimeToWIB(time.Now()),
+		RoleID:    defaultRoleID,
+		Active:    "false",
+	}
 
-	pipeline.JSON(c, status, "actor created", responseActor)
+	pipeline.JSON(c, status, "actor created", response)
 }
 
 func (ctr *ControllerActor) GetActorById(c *gin.Context) {
+	if valid := pipeline.ValidateJWT(c); valid {
+		return // Error response handled in validateJWT
+	}
 
-	var actorRepo model_actor.ModelActor
-	var status int
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if err != nil {
-		pipeline.AbortWithStatusJSON(c, http.StatusBadRequest, "must unsigned number")
+	//bind param
+	id, valid := pipeline.BindParamAndParseUint(c, "id")
+	if valid {
 		return
 	}
-	status, err = ctr.client.GetActorById(c, id, &actorRepo)
+
+	status, err, getActor := ctr.client.GetActorById(c, id)
 	//check status
-	if status < 200 || status > 299 {
+	if err != nil || !helper.IsSuccessStatus(status) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
+	response := model_actor.ResponseActor{
+		ID:        getActor.ID,
+		Username:  getActor.Username,
+		RoleID:    getActor.RoleID,
+		Active:    getActor.Active,
+		Verified:  getActor.Verified,
+		CreatedAt: helper.ConvertTimeToWIB(getActor.CreatedAt),
+		UpdatedAt: helper.ConvertTimeToWIB(getActor.UpdatedAt),
+	}
 
-	pipeline.JSON(c, status, "actor created", actorRepo)
+	pipeline.JSON(c, status, "Get Actor", response) // res
 }
 
-//	func (h ControllerActor) GetAllActor(c *gin.Context) {
-//		page, err := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 64)
-//		username := c.DefaultQuery("username", "")
-//
-//		if err != nil {
-//			c.AbortWithStatusJSON(http.StatusBadRequest, model_response.DefaultErrorResponseWithMessage("must unsigned number", http.StatusBadRequest))
-//			return
-//		}
-//
-//		res, status, errMessage := h.ctr.GetAllActor(c, page, username)
-//		//check status
-//		if status < 200 || status > 299 {
-//			c.AbortWithStatusJSON(status, errMessage)
-//			return
-//		}
-//		c.JSON(http.StatusOK, res)
-//	}
-func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
-	//envJWT, _ := c.Get("envJWT")
-	//setJWT := envJWT.(map[string]interface{})
-	//
-	//if setJWT["role"] != "1" {
-	//	c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
-	//	return
-	//}
+func (ctr *ControllerActor) GetAllActor(c *gin.Context) {
 
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+	page, valid := pipeline.BindQueryAndParseUint(c, "page")
+	limit, valid := pipeline.BindQueryAndParseUint(c, "limit")
+	if valid {
+		return // if error
+	}
+
+	username := c.DefaultQuery("username", "")
+	status, err, allActor := ctr.client.GetAllActor(c, page, limit, username)
+	//check status
+	if err != nil || !helper.IsSuccessStatus(status) {
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
+		return
+	}
+	status, err, countActor := ctr.client.GetCountRowsActor(c)
+	//check status
+	if err != nil || !helper.IsSuccessStatus(status) {
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
+		return
+	}
+	var actor []model_actor.ResponseActor
+	for _, i := range allActor {
+		history := model_actor.ResponseActor{
+			ID:        i.ID,
+			Username:  i.Username,
+			RoleID:    i.RoleID,
+			Active:    i.Active,
+			Verified:  i.Verified,
+			CreatedAt: helper.ConvertTimeToWIB(i.CreatedAt),
+			UpdatedAt: helper.ConvertTimeToWIB(i.UpdatedAt),
+		}
+		actor = append(actor, history)
+	}
+
+	response := model_actor.FindAllActor{
+		Page:       page,
+		PerPage:    limit,
+		TotalPages: countActor.Total,
+		Data:       actor,
+	}
+	pipeline.JSON(c, http.StatusOK, "Get All Actor", response)
+}
+
+func (ctr *ControllerActor) UpdateActorById(c *gin.Context) {
+	if valid := pipeline.ValidateJWT(c); valid {
+		return // Error response handled in validateJWT
+	}
+
+	//bind param
+	id, valid := pipeline.BindParamAndParseUint(c, "id")
+	if valid {
 		return
 	}
 
 	var request model_actor.RequestUpdateActor
-	err = c.Bind(&request)
-	//validate
-	err = ctr.validator.Struct(request)
-	if err != nil {
-		// Validation failed
-		pipeline.AbortWithStatusJSON(c, http.StatusPreconditionFailed, helper.RequestValidate(err))
-		return
+	if valid = pipeline.BindAndValidateRequest(c, ctr.validator, &request); valid {
+		return // Error response handled in bindAndValidateRequest
 	}
 
-	status, errMessage := ctr.client.UpdateActorById(c, id, request)
+	status, err := ctr.client.UpdateActorById(c, id, request)
 	//check status
-	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, errMessage)
+	if err != nil || !helper.IsSuccessStatus(status) {
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
-	var responseActor model_actor.ResponseActor
-	responseActor.Username = request.Username
-	responseActor.UpdatedAt = helper.ConvertTimeToWIB(time.Now())
-	responseActor.RoleID = 2
-	responseActor.Verified = request.Verified
-	responseActor.Active = request.Active
-
-	c.JSON(http.StatusOK, libs_model_response.DefaultSuccessResponseWithMessage("Update data actor", status, responseActor))
+	response := model_actor.ResponseActor{
+		Username:  request.Username,
+		RoleID:    0,
+		Active:    request.Active,
+		Verified:  request.Verified,
+		UpdatedAt: helper.ConvertTimeToWIB(time.Now()),
+	}
+	pipeline.JSON(c, status, "update actor", response)
 }
 
 func (ctr *ControllerActor) DeleteActorById(c *gin.Context) {
-	envJWT, _ := c.Get("envJWT")
-	setJWT := envJWT.(map[string]interface{})
-
-	if setJWT["role"] != "1" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
-		return
+	if valid := pipeline.ValidateJWT(c); valid {
+		return // Error response handled in validateJWT
 	}
-	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
+
+	//bind param
+	id, valid := pipeline.BindParamAndParseUint(c, "id")
+	if valid {
 		return
 	}
 
-	status, errMessage := ctr.client.DeleteActorById(c, actorId)
+	status, err := ctr.client.DeleteActorById(c, id)
 	//check status
-	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, errMessage)
+	if err != nil || !helper.IsSuccessStatus(status) {
+		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
-	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
-}
-
-func (ctr *ControllerActor) ActivateActorById(c *gin.Context) {
-	//envJWT, _ := c.Get("envJWT")
-	//setJWT := envJWT.(map[string]interface{})
-	//
-	//if setJWT["role"] != "1" {
-	//	c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
-	//	return
-	//}
-	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
-		return
-	}
-
-	status, errMessage := ctr.client.ActivateActorById(c, actorId)
-	//check status
-	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, errMessage)
-		return
-	}
-	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
-}
-
-func (ctr *ControllerActor) DeactivateActorById(c *gin.Context) {
-	//envJWT, _ := c.Get("envJWT")
-	//setJWT := envJWT.(map[string]interface{})
-	//
-	//if setJWT["role"] != "1" {
-	//	c.AbortWithStatusJSON(http.StatusUnauthorized, "Not Authorization")
-	//	return
-	//}
-	actorId, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, libs_model_response.DefaultErrorResponseWithMessage("required not valid", http.StatusBadRequest))
-		return
-	}
-
-	status, errMessage := ctr.client.DeactivateActorById(c, actorId)
-	//check status
-	if status < 200 || status > 299 {
-		c.AbortWithStatusJSON(status, errMessage)
-		return
-	}
-	c.JSON(status, libs_model_response.DefaultSuccessResponseWithMessage("success delete data actor", status, "success"))
+	pipeline.JSON(c, status, "Delete Actor", "Success")
 }

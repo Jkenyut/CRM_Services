@@ -27,3 +27,7 @@ func ConvertTimeToWIB(t time.Time) (format string) {
 	format = t.In(loc).Format("02-01-2006 15:04:05 MST")
 	return format
 }
+
+func IsSuccessStatus(status int) bool {
+	return status >= 200 && status <= 299
+}

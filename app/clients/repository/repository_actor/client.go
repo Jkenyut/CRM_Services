@@ -67,7 +67,7 @@ func (repo *ClientRepositoryActor) GetActorByUsername(ctx context.Context, req *
 	return http.StatusOK, nil
 }
 
-func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, actorRepository *model_actor.ModelActor) (int, error) {
+func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64) (status int, err error, actorRepository model_actor.ModelActor) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
@@ -77,16 +77,16 @@ func (repo *ClientRepositoryActor) GetActorById(ctx context.Context, ID uint64, 
 	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById, ID).Scan(&actorRepository)
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
+		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor"), actorRepository
 	} else if result.RowsAffected == 0 {
 		// return if not found
-		return http.StatusNotFound, errors.New("actor not found")
+		return http.StatusNotFound, errors.New("actor not found"), actorRepository
 	}
 
-	return http.StatusOK, nil
+	return http.StatusOK, nil, actorRepository
 }
 
-func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64, limit uint64, username string, actorRepository *[]model_actor.ModelActor) (int, error) {
+func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64, limit uint64, username string) (status int, err error, actorRepository []model_actor.ModelActor) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
@@ -102,13 +102,13 @@ func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64,
 
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query all repository-model_actor")
+		return http.StatusInternalServerError, errors.New("failed exec query all repository-model_actor"), actorRepository
 	}
 
-	return http.StatusOK, nil
+	return http.StatusOK, nil, actorRepository
 }
 
-func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorRepository *model_actor.ModelActor) (int, error) {
+func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context) (status int, err error, actorRepository model_actor.ModelActor) {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
@@ -118,10 +118,10 @@ func (repo *ClientRepositoryActor) GetCountRowsActor(ctx context.Context, actorR
 	result := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryGetActorById).Scan(&actorRepository)
 	if result.Error != nil {
 		//error mysql
-		return http.StatusInternalServerError, errors.New("failed exec query count all repository-model_actor")
+		return http.StatusInternalServerError, errors.New("failed exec query count all repository-model_actor"), actorRepository
 	}
 
-	return http.StatusOK, nil
+	return http.StatusOK, nil, actorRepository
 }
 
 func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint64, updateActor model_actor.RequestUpdateActor) (int, error) {
@@ -132,7 +132,7 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 	var args []interface{}
 	args = append(args, updateActor.Username, updateActor.Verified, updateActor.Active, id)
 	//query
-	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,activate=? WHERE id=?"
+	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,active=? WHERE id=?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, args...)
 	if result.Error != nil {
 		//error mysql
@@ -142,7 +142,7 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 		return http.StatusNotFound, errors.New("cannot update because username already exist")
 	}
 
-	return http.StatusOK, nil
+	return http.StatusAccepted, nil
 }
 
 func (repo *ClientRepositoryActor) DeleteActorById(ctx context.Context, id uint64) (int, error) {
