@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"math"
 	"time"
 )
 
@@ -30,4 +31,11 @@ func ConvertTimeToWIB(t time.Time) (format string) {
 
 func IsSuccessStatus(status int) bool {
 	return status >= 200 && status <= 299
+}
+
+func CustomFloor(number float64) float64 {
+	if number == 0 {
+		return 1
+	}
+	return math.Floor(number)
 }

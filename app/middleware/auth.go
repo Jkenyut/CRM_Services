@@ -52,7 +52,7 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 	}
 
 	accessToken := headerParts[1]
-
+	fmt.Println(headerParts)
 	tokenAccess, err := jwt.ParseWithClaims(accessToken, &libs_model_jwt.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(m.conf.JWT.Access), nil
 	})
@@ -112,8 +112,7 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, libs_model_response.DefaultErrorResponseWithMessage("User agent mismatch", http.StatusUnauthorized))
 		return
 	}
-	fmt.Println("hahahahah")
+
 	c.Set("envJWT", claimsAccess)
-	fmt.Println("heheheh")
 	c.Next()
 }

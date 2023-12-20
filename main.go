@@ -6,6 +6,7 @@ import (
 	"crm_service/app/model"
 	"crm_service/app/services/service_actor"
 	"crm_service/app/services/services_auth"
+	"crm_service/app/services/services_customer"
 	"fmt"
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
 	helmet "github.com/danielkov/gin-helmet"
@@ -35,11 +36,8 @@ func main() {
 	router.Use(mw)
 	services_auth.NewServiceAuth(router, conf, conn, validators)
 	service_actor.NewServiceActor(router, conf, conn, validators)
+	services_customer.NewServiceCustomer(router, conf, conn, validators)
 
-	//
-	//customerHandler := contoller_customer.NewRouter(db)
-	//customerHandler.Handle(router)
-	//
 	errRouter := router.Run(":8081")
 	if errRouter != nil {
 		panic(fmt.Sprint("error running server", errRouter))

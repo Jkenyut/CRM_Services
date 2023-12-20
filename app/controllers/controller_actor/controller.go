@@ -1,4 +1,4 @@
-package contoller_actor
+package controller_actor
 
 import (
 	"crm_service/app/clients/repository/repository_actor"
@@ -93,8 +93,8 @@ func (ctr *ControllerActor) GetActorById(c *gin.Context) {
 
 func (ctr *ControllerActor) GetAllActor(c *gin.Context) {
 
-	page, valid := pipeline.BindQueryAndParseUint(c, "page")
-	limit, valid := pipeline.BindQueryAndParseUint(c, "limit")
+	page, valid := pipeline.BindQueryAndParseUint(c, "page", "1")
+	limit, valid := pipeline.BindQueryAndParseUint(c, "limit", "10")
 	if valid {
 		return // if error
 	}
@@ -106,7 +106,7 @@ func (ctr *ControllerActor) GetAllActor(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
-	status, err, countActor := ctr.client.GetCountRowsActor(c)
+	status, err, count := ctr.client.GetCountRowsActor(c)
 	//check status
 	if err != nil || !helper.IsSuccessStatus(status) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
@@ -129,7 +129,8 @@ func (ctr *ControllerActor) GetAllActor(c *gin.Context) {
 	response := model_actor.FindAllActor{
 		Page:       page,
 		PerPage:    limit,
-		TotalPages: countActor.Total,
+		TotalPages: helper.CustomFloor(float64(count.Total / limit)),
+		TotalData:  count.Total,
 		Data:       actor,
 	}
 	pipeline.JSON(c, http.StatusOK, "Get All Actor", response)

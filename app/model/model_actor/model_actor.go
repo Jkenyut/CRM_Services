@@ -36,7 +36,8 @@ type RequestUpdateActor struct {
 type FindAllActor struct {
 	Page       uint64          `json:"page,omitempty"`
 	PerPage    uint64          `json:"perPage,omitempty"`
-	TotalPages uint64          `json:"totalPages,omitempty"`
+	TotalPages float64         `json:"totalPages,omitempty"`
+	TotalData  uint64          `json:"totalData,omitempty"`
 	Data       []ResponseActor `json:"data,omitempty"`
 }
 

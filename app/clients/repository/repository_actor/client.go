@@ -31,9 +31,9 @@ func (repo *ClientRepositoryActor) CreateActor(ctx context.Context, req *model_a
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, req.Username, req.Password, req.Username)
+	args = append(args, req.Username, req.Password, time.Now().Format("20060102150405"), req.Username)
 	//query
-	queryCreateActor := "INSERT INTO actors( username, password) SELECT ?,? WHERE NOT EXISTS (SELECT username FROM actors WHERE username=?)"
+	queryCreateActor := "INSERT INTO actors( username, password,created_at) SELECT ?,?,? WHERE NOT EXISTS (SELECT username FROM actors WHERE username=?)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryCreateActor, args...)
 
 	//check
@@ -95,7 +95,7 @@ func (repo *ClientRepositoryActor) GetAllActor(ctx context.Context, page uint64,
 	//page
 	startID := (page - 1) * limit
 	var args []interface{}
-	args = append(args, startID, fmt.Sprint(username, "%"), limit)
+	args = append(args, startID, fmt.Sprint("%", username, "%"), limit)
 
 	//query
 	queryGetActorById := "SELECT id, username, role_id, verified, active, created_at, updated_at FROM actors WHERE id > ? AND username LIKE ? LIMIT ?"
@@ -131,9 +131,9 @@ func (repo *ClientRepositoryActor) UpdateActorById(ctx context.Context, id uint6
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, updateActor.Username, updateActor.Verified, updateActor.Active, id)
+	args = append(args, updateActor.Username, updateActor.Verified, updateActor.Active, time.Now().Format("20060102150405"), id)
 	//query
-	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,active=? WHERE id=?"
+	queryUpdateActorById := "UPDATE actors SET username=?,verified=?,active=?,updated_at=? WHERE id=?"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryUpdateActorById, args...)
 	if result.Error != nil {
 		//username already exist
@@ -175,9 +175,9 @@ func (repo *ClientRepositoryActor) ActivateActorById(ctx context.Context, id uin
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, id)
+	args = append(args, time.Now().Format("20060102150405"), id)
 
-	queryActivateActorById := "UPDATE actors SET active='true' where id=? AND (active != 'true' OR active IS NULL) "
+	queryActivateActorById := "UPDATE actors SET active='true',updated_at=? where id=? AND (active != 'true' OR active IS NULL) "
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryActivateActorById, args...)
 	if result.Error != nil {
 		//error mysql
@@ -195,9 +195,9 @@ func (repo *ClientRepositoryActor) DeactivateActorById(ctx context.Context, id u
 	defer cancel()
 
 	var args []interface{}
-	args = append(args, id)
+	args = append(args, time.Now().Format("20060102150405"), id)
 
-	queryDeactivateActorById := "UPDATE actors SET active='false' where id=? AND (active != 'false' OR active IS NULL)"
+	queryDeactivateActorById := "UPDATE actors SET active='false',updated_at=? where id=? AND (active != 'false' OR active IS NULL)"
 	result := repo.client.GetConnectionDB().WithContext(ctx).Exec(queryDeactivateActorById, args...)
 	if result.Error != nil {
 		//error mysql

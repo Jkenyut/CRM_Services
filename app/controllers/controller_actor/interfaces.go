@@ -1,4 +1,4 @@
-package contoller_actor
+package controller_actor
 
 import "github.com/gin-gonic/gin"
 

@@ -55,8 +55,8 @@ func BindParamAndParseUint(c *gin.Context, request string) (id uint64, valid boo
 	return res, false
 }
 
-func BindQueryAndParseUint(c *gin.Context, request string) (id uint64, valid bool) {
-	res, err := strconv.ParseUint(c.DefaultQuery(request, "1"), 10, 64)
+func BindQueryAndParseUint(c *gin.Context, request string, defaultValue string) (id uint64, valid bool) {
+	res, err := strconv.ParseUint(c.DefaultQuery(request, defaultValue), 10, 64)
 	if err != nil {
 		AbortWithStatusJSON(c, http.StatusBadRequest, "must unsigned number")
 		return
