@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "da1c9955-90a0-4bbd-b1a7-3c6b19a0091e",
+		"name": "mass credit loan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "17176232"
+	},
+	"item": [
+		{
+			"name": "mass credit loan",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "P@ssw0rdNDS123",
+						"username": "nds"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"request\": {\r\n        \"namaFile\": \"XXXXXX\",\r\n        \"channelId\" :\"INDS\",\r\n        \"serviceId\" :\"000KC\",\r\n        \"externalId\": \"000021244\",\r\n        \"tellerId\": \"0206051\"\r\n         \r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://mcgwloanaccountdev.apps.ocp-dev.bri.co.id/loanaccountfundtransfer/1.0/msloanaccountfundtransfer/masscreditloan"
+			},
+			"response": []
+		},
+		{
+			"name": "maintenance credit loan",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "P@ssw0rdNDS123",
+						"username": "nds"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"request\": {\r\n        \"loanType\": \"XXXXXX\",\r\n        \"currencyType\": \"XXXXXX\",\r\n        \"function\": \"ADD\",\r\n        \"channelId\" :\"INDS\",\r\n        \"serviceId\" :\"000KR\",\r\n        \"externalId\": \"12221427\",\r\n        \"tellerId\": \"0206051\"\r\n         \r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://mcgwloanaccountdev.apps.ocp-dev.bri.co.id/loanaccountretrieve/1.0/msloanaccountretrieveinformation/maintenanceloantypemasscredit"
+			},
+			"response": []
+		}
+	]
+}

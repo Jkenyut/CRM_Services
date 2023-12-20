@@ -1,0 +1,2757 @@
+{
+	"info": {
+		"_postman_id": "cb4e8b9b-9a77-4572-be88-428614832d68",
+		"name": "mini project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16127230"
+	},
+	"item": [
+		{
+			"name": "actor",
+			"item": [
+				{
+					"name": "create actor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"e\",\r\n    \"password\":\"dkscninckemv\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "500",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"hai\",\r\n    \"password\":\"hello123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"register"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1696492373"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 05 Oct 2023 07:51:53 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "84"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": {\n        \"success\": false,\n        \"message\": \"Username Already Exists\",\n        \"statusCode\": \"500\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "get all actor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/actor?page=1&username=s",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "username",
+									"value": "s"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "sucess",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor?page=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1696577566"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 06 Oct 2023 07:31:46 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": {\n        \"success\": true,\n        \"message\": \"Get All Actor\",\n        \"statusCode\": \"200\"\n    },\n    \"data\": {\n        \"page\": 1,\n        \"per_page\": 15,\n        \"total_pages\": 1,\n        \"data\": [\n            {\n                \"ID\": 1,\n                \"username\": \"superadmin\",\n                \"roleID\": 1,\n                \"verified\": \"true\",\n                \"active\": \"true\",\n                \"createdAt\": \"2023-06-02T11:41:18+07:00\",\n                \"updatedAt\": \"2023-06-04T12:18:58+07:00\"\n            },\n            {\n                \"ID\": 3,\n                \"username\": \"be\",\n                \"roleID\": 2,\n                \"verified\": \"true\",\n                \"active\": \"true\",\n                \"createdAt\": \"2023-06-02T14:33:07+07:00\",\n                \"updatedAt\": \"2023-06-03T16:39:09+07:00\"\n            },\n            {\n                \"ID\": 4,\n                \"username\": \"se\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-06-02T18:07:55+07:00\",\n                \"updatedAt\": \"2023-06-03T16:17:29+07:00\"\n            },\n            {\n                \"ID\": 6,\n                \"username\": \"s\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-06-02T18:12:35+07:00\",\n                \"updatedAt\": \"2023-06-02T18:12:35+07:00\"\n            },\n            {\n                \"ID\": 9,\n                \"username\": \"d\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-06-04T14:16:11+07:00\",\n                \"updatedAt\": \"2023-06-04T14:16:11+07:00\"\n            },\n            {\n                \"ID\": 17,\n                \"username\": \"hi\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T09:47:48+07:00\",\n                \"updatedAt\": \"2023-10-06T09:47:48+07:00\"\n            },\n            {\n                \"ID\": 18,\n                \"username\": \"h0\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T09:49:19+07:00\",\n                \"updatedAt\": \"2023-10-06T09:49:19+07:00\"\n            },\n            {\n                \"ID\": 19,\n                \"username\": \"hai\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:21:35+07:00\",\n                \"updatedAt\": \"2023-10-06T13:21:35+07:00\"\n            },\n            {\n                \"ID\": 21,\n                \"username\": \"ence\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:25:25+07:00\",\n                \"updatedAt\": \"2023-10-06T13:29:05+07:00\"\n            },\n            {\n                \"ID\": 25,\n                \"username\": \"ka\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:28:44+07:00\",\n                \"updatedAt\": \"2023-10-06T13:28:44+07:00\"\n            },\n            {\n                \"ID\": 28,\n                \"username\": \"en\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:29:38+07:00\",\n                \"updatedAt\": \"2023-10-06T13:29:54+07:00\"\n            },\n            {\n                \"ID\": 30,\n                \"username\": \"j\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:30:05+07:00\",\n                \"updatedAt\": \"2023-10-06T13:30:05+07:00\"\n            },\n            {\n                \"ID\": 36,\n                \"username\": \"hahaha\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:31:28+07:00\",\n                \"updatedAt\": \"2023-10-06T13:31:28+07:00\"\n            },\n            {\n                \"ID\": 38,\n                \"username\": \"hahah\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:31:50+07:00\",\n                \"updatedAt\": \"2023-10-06T13:31:50+07:00\"\n            },\n            {\n                \"ID\": 39,\n                \"username\": \"h\",\n                \"roleID\": 2,\n                \"verified\": \"false\",\n                \"active\": \"false\",\n                \"createdAt\": \"2023-10-06T13:32:25+07:00\",\n                \"updatedAt\": \"2023-10-06T13:32:25+07:00\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "get actor by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"10"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 03:18:51 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "274"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success find actor\",\n    \"message\": \"Success Find\",\n    \"responseTime\": \"\",\n    \"data\": {\n        \"ID\": 1,\n        \"Username\": \"superadmin\",\n        \"Password\": \"superadmin\",\n        \"RoleID\": 1,\n        \"Verified\": \"true\",\n        \"Active\": \"true\",\n        \"CreatedAt\": \"2023-05-29T21:10:08Z\",\n        \"UpdatedAt\": \"2023-05-29T21:11:17Z\"\n    }\n}"
+						},
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"0"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1696559642"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 06 Oct 2023 02:33:02 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "76"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": {\n        \"success\": false,\n        \"message\": \"Actor Not Found\",\n        \"statusCode\": \"404\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "update actor",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"be\",\r\n    \"password\":\"supera\",\r\n    \"verified\": \"true\",\r\n    \"active\":\"true\"\r\n\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"3"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "conflict",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"s\",\r\n    \"password\":\"ssedenkenf\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"register"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 02:55:04 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "127"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"username already taken\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "Unprocessable Entity",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\r\n    \"password\":\"ssedenkenf\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"register"
+									]
+								}
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 03:12:23 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "123"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Username required \",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"0"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 03:19:05 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Actor not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "server error",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										""
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 06:21:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "117"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Server error\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"sr\",\r\n    \"password\":\"supera\",\r\n    \"verified\": \"true\",\r\n    \"active\":\"true\"\r\n\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685802592"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 14:28:53 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "320"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success update actor\",\n    \"message\": \"Success update\",\n    \"responseTime\": \"\",\n    \"data\": {\n        \"ID\": 3,\n        \"Username\": \"sr\",\n        \"password\": \"$2a$12$JvynnjDWxczsuEIk7XHLR.L2SaK6rthy39jgedA6iZhr42cFuMsTq\",\n        \"RoleID\": 2,\n        \"Verified\": \"true\",\n        \"Active\": \"true\",\n        \"CreatedAt\": \"2023-06-02T14:33:07Z\",\n        \"UpdatedAt\": \"2023-06-03T14:28:53Z\"\n    }\n}"
+						},
+						{
+							"name": "not authorized",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"be\",\r\n    \"password\":\"supera\",\r\n    \"verified\": \"true\",\r\n    \"active\":\"true\"\r\n\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"3"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "16"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685863188"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 07:18:48 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "122"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Not Authorization\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "delete actor",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"7"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "server error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										""
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 06:21:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "117"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Server error\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/8",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"8"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "17"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685796859"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 12:53:19 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "99"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success delete actor\",\n    \"message\": \"Success delete\",\n    \"responseTime\": \"\"\n}"
+						},
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/8",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"8"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685803147"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 14:38:07 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Actor not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "not authorized",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/7",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"7"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "15"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685863217"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 07:19:17 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "122"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Not Authorization\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "login actor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('status code should be 201', () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response header Content-Type should be application/json', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.equals('application/json; charset=utf-8');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should be an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    console.log(responseJson)\r",
+									"    pm.expect(responseJson).to.haveOwnProperty('message');\r",
+									"    pm.expect(responseJson).to.haveOwnProperty('data');\r",
+									"\r",
+									"    pm.expect(responseJson.message.success).to.equals(true);\r",
+									"    pm.expect(responseJson.message.message).not.be.null\r",
+									"    pm.expect(responseJson.data).to.be.an('string');\r",
+									"    pm.environment.set('TOKEN_ACCESS',responseJson.data)\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"superadmin\",\r\n   \r\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "invalid creadentials",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"superadmin\",\r\n    \"password\":\"d\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685855883"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 05:17:04 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "137"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"invalid username & password\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"superadmin\",\r\n    \"password\":\"superadmin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "17"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685855911"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 05:17:32 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "289"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success login actor\",\n    \"message\": \"Success login actor\",\n    \"responseTime\": \"1.005234s\",\n    \"data\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjowLCJ1c2VyX2FnZW50IjoiUG9zdG1hblJ1bnRpbWUvNy4zMi4yIiwiZXhwIjoxNjg1OTQyMjUyfQ.ziRF2hJuMcy-8aydOBUHMgMkNiipM2lsLQlAm9xKJdY\"\n}"
+						},
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"superadmi\",\r\n    \"password\":\"superadmin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"login"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Authorization",
+									"value": "Bearer"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685857624"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 05:46:04 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"actor not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "actor not activate",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"se\",\r\n    \"password\":\"supera\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Authorization",
+									"value": "Bearer"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685863798"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 07:28:59 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "126"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"username not activate\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "logout actor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/actor/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"actor",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685974050"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 05 Jun 2023 14:06:30 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "105"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success login actor\",\n    \"message\": \"Success login actor\",\n    \"responseTime\": \"0s\"\n}"
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{TOKEN_ACCESS}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "customer",
+			"item": [
+				{
+					"name": "create customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"email\":\"hello@ok.k\",\r\n    \"avatar\":\"word\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/v1/customer/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"customer",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "unprocessable entity",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"email\":\"hello\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"register"
+									]
+								}
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685814439"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 17:46:19 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "116"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"email wrong\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"email\":\"hello@ok.k\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685814481"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 17:47:01 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "195"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success create customer\",\n    \"message\": \"Success register\",\n    \"responseTime\": \"41.8172ms\",\n    \"data\": {\n        \"firstname\": \"ok\",\n        \"lastname\": \"hahah\",\n        \"email\": \"hello@ok.k\",\n        \"avatar\": \"word\"\n    }\n}"
+						},
+						{
+							"name": "conflict",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"email\":\"hello@ok.k\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"register"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "17"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685814498"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 17:47:18 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "124"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"email already taken\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "invalid token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"email\":\"hello@ok.k\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685864620"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jun 2023 07:42:40 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "125"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"signature is invalid\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "get all customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/customer?page=1&name=o",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"customer"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "name",
+									"value": "o"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/customer?page=1&name=o",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "name",
+											"value": "o"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685815941"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:11:21 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "319"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success find customer\",\n    \"message\": \"Success find all\",\n    \"responseTime\": \"17.42ms\",\n    \"page\": 1,\n    \"per_page\": 20,\n    \"total\": 1,\n    \"total_pages\": 1,\n    \"data\": [\n        {\n            \"ID\": 1,\n            \"FirstName\": \"ok\",\n            \"LastName\": \"hahah\",\n            \"Email\": \"hello@ok.k\",\n            \"Avatar\": \"word\",\n            \"CreatedAt\": \"2023-06-04T00:47:01Z\",\n            \"UpdatedAt\": \"2023-06-04T00:47:01Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "get customer by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/customer/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"customer",
+								"5"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"0"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685814810"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 17:52:30 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "123"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Customer not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685814877"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 17:53:37 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "265"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success find customer\",\n    \"message\": \"Success find\",\n    \"responseTime\": \"3.9239ms\",\n    \"data\": {\n        \"ID\": 1,\n        \"FirstName\": \"ok\",\n        \"LastName\": \"hahah\",\n        \"Email\": \"hello@ok.k\",\n        \"Avatar\": \"word\",\n        \"CreatedAt\": \"2023-06-04T00:47:01Z\",\n        \"UpdatedAt\": \"2023-06-04T00:47:01Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "update customer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\":\"k\",\r\n    \"lastname\":\"wkdnw\",\r\n    \"avatar\":\"word\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/v1/customer/12",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"customer",
+								"12"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"ok\",\r\n    \"lastname\":\"hahah\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"3"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685816111"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:14:11 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "123"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"customer not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"k\",\r\n    \"lastname\":\"hahah\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "18"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685816355"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:18:15 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "278"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success update customer\",\n    \"message\": \"Success update customer\",\n    \"responseTime\": \"13.9597ms\",\n    \"data\": {\n        \"ID\": 1,\n        \"FirstName\": \"k\",\n        \"LastName\": \"hahah\",\n        \"Email\": \"hello@ok.k\",\n        \"Avatar\": \"word\",\n        \"CreatedAt\": \"2023-06-04T00:47:01Z\",\n        \"UpdatedAt\": \"2023-06-03T18:18:16Z\"\n    }\n}"
+						},
+						{
+							"name": "Unprocessable Entity",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\":\"k\",\r\n    \"lastname\":\"\",\r\n    \"avatar\":\"word\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"1"
+									]
+								}
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685816452"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:19:52 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "119"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"LastName min 1\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "delete customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/v1/customer/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"v1",
+								"customer",
+								"11"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "server error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/actor/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"actor",
+										""
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 Jun 2023 06:21:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "117"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Server error\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/7",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"7"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685816546"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:21:26 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "123"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"messageTitle\": \"Oops, something went wrong.\",\n    \"message\": \"Customer not found\",\n    \"responseTime\": \"\",\n    \"data\": null\n}"
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8081/v1/customer/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"v1",
+										"customer",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=5184000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Dns-Prefetch-Control",
+									"value": "off"
+								},
+								{
+									"key": "X-Download-Options",
+									"value": "noopen"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-Rate-Limit-Limit",
+									"value": "20"
+								},
+								{
+									"key": "X-Rate-Limit-Remaining",
+									"value": "19"
+								},
+								{
+									"key": "X-Rate-Limit-Reset",
+									"value": "1685816649"
+								},
+								{
+									"key": "X-Xss-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 Jun 2023 18:23:09 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "120"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"messageTitle\": \"Success delete customer\",\n    \"message\": \"Success delete customer\",\n    \"responseTime\": \"23.4895ms\"\n}"
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{TOKEN_ACCESS}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
