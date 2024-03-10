@@ -5,7 +5,6 @@ import (
 	"crm_service/app/config"
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/origin"
-	"fmt"
 	"github.com/Jkenyut/libs-numeric-go/libs_auth/libs_auth_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_response"
@@ -52,7 +51,7 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 	}
 
 	accessToken := headerParts[1]
-	fmt.Println(headerParts)
+
 	tokenAccess, err := jwt.ParseWithClaims(accessToken, &libs_model_jwt.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(m.conf.JWT.Access), nil
 	})
@@ -61,16 +60,13 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, err.Error())
 		return
 	}
-	fmt.Print(tokenAccess)
 
 	claimsAccess, ok := tokenAccess.Claims.(*libs_model_jwt.CustomClaims) // Use pointer type here
-	fmt.Println(claimsAccess)
+
 	if !ok {
 		pipeline.AbortWithStatusJSON(c, http.StatusUnauthorized, "mapping jwt failed")
 		return
 	}
-
-	fmt.Print("dubdubdu")
 
 	externalID := uuid.New().String()
 	subject, _ := claimsAccess.GetSubject()
@@ -81,7 +77,6 @@ func (m *AuthMiddleware) Auth(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("okokokokokok")
 	ExpiresAt, _ := claimsAccess.GetExpirationTime()
 	if ExpiresAt.Before(time.Now()) {
 		var status int

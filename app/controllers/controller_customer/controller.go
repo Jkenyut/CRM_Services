@@ -5,6 +5,7 @@ import (
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/model_customer"
 	"crm_service/app/utils/helper"
+	"github.com/Jkenyut/libs-numeric-go/libs_tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -47,11 +48,20 @@ func (ctr *ControllerCustomer) CreateCustomer(c *gin.Context) {
 
 func (ctr *ControllerCustomer) GetCustomerByEmail(c *gin.Context) {
 	var request model_customer.RequestCustomerEmail
+	tracer := libs_tracing.NewTracingJaeger("GetCustomerByEmail")
+	do := tracer.InitJaeger()
+	defer do.Close()
+
+	l := libs_tracing.NewTracingJaegerOperation(c)
+	span, _ := l.SetOperation("GetAll")
+	defer span.Finish()
+	l.TracingTag(c.Request)
+
 	if valid := pipeline.BindAndValidateRequest(c, ctr.validator, &request); valid {
 		return // Error response handled in bindAndValidateRequest
 	}
-
-	status, err, res := ctr.client.GetCustomerByEmail(c, request)
+	l.SetLog("request", request)
+	status, err, res := ctr.client.GetCustomerByEmail(l.OutgoingContext(), request)
 	if err != nil || !helper.IsSuccessStatus(status) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
@@ -95,7 +105,6 @@ func (ctr *ControllerCustomer) GetCustomerById(c *gin.Context) {
 }
 
 func (ctr *ControllerCustomer) GetAllCustomer(c *gin.Context) {
-
 	page, valid := pipeline.BindQueryAndParseUint(c, "page", "1")
 	limit, valid := pipeline.BindQueryAndParseUint(c, "limit", "10")
 	if valid {
@@ -180,5 +189,6 @@ func (ctr *ControllerCustomer) DeleteCustomerById(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
-	pipeline.JSON(c, status, "Delete customer", "Success")
+
+	pipeline.JSON(c, status, "Delete customer", "success")
 }

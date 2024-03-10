@@ -7,6 +7,9 @@ import (
 	"crm_service/app/model/model_customer"
 	"errors"
 	"fmt"
+	"github.com/Jkenyut/libs-numeric-go/libs_tracing"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/log"
 	"net/http"
 	"strings"
 	"time"
@@ -48,6 +51,17 @@ func (repo *ClientRepositoryCustomer) CreateCustomer(ctx context.Context, req mo
 }
 
 func (repo *ClientRepositoryCustomer) GetCustomerByEmail(ctx context.Context, req model_customer.RequestCustomerEmail) (status int, err error, res model_customer.Customer) {
+	l := libs_tracing.NewTracingJaegerOperation(ctx)
+	span, _ := l.SetOperation("model")
+	defer span.Finish()
+	l.SetLog("request", req)
+	opentracing.ChildOf(span.Context())
+	k := opentracing.StartSpan("jjsk").Tracer()
+	n := k.StartSpan("operation", opentracing.StartTime(time.Now()))
+	defer n.Finish()
+	childSpan := k.StartSpan("child-span", opentracing.ChildOf(n.Context()))
+	defer childSpan.Finish()
+	childSpan.LogFields(log.String("k ", "ll"))
 	//timeout
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
