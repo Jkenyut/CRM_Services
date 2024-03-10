@@ -47,6 +47,7 @@ func (ctr *ControllerCustomer) CreateCustomer(c *gin.Context) {
 
 func (ctr *ControllerCustomer) GetCustomerByEmail(c *gin.Context) {
 	var request model_customer.RequestCustomerEmail
+
 	if valid := pipeline.BindAndValidateRequest(c, ctr.validator, &request); valid {
 		return // Error response handled in bindAndValidateRequest
 	}
@@ -95,7 +96,6 @@ func (ctr *ControllerCustomer) GetCustomerById(c *gin.Context) {
 }
 
 func (ctr *ControllerCustomer) GetAllCustomer(c *gin.Context) {
-
 	page, valid := pipeline.BindQueryAndParseUint(c, "page", "1")
 	limit, valid := pipeline.BindQueryAndParseUint(c, "limit", "10")
 	if valid {
@@ -180,5 +180,6 @@ func (ctr *ControllerCustomer) DeleteCustomerById(c *gin.Context) {
 		pipeline.AbortWithStatusJSON(c, status, err.Error())
 		return
 	}
-	pipeline.JSON(c, status, "Delete customer", "Success")
+
+	pipeline.JSON(c, status, "Delete customer", "success")
 }

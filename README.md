@@ -3,19 +3,49 @@
 
 0. Link API postman [postman](https://documenter.getpostman.com/view/16127230/2s93sW9ayD)
 1. Dump Sql extension to your mysql database because program disable auto-migrate
-2. Build enviroment ```local.env```
-```
-CONNECT_DB =            // your uri database
-ACCESS_TOKEN_JWT =      // secret-jwt
-```
-3. Run to download go package 
+2. Run to download go package
 ``` azure
-   go mod download 
+   go mod download
    go mod tidy
 ```
+
+3. Build enviroment ```Make config```
+You can command in CLI ``make config``
+```
+listen: 0.0.0.0
+port: 8081
+database:
+    crm:
+        enable: true
+        driver: ""
+        host: 127.0.0.1
+        port: 3306
+        username: root
+        password:
+        database: numeric_crm_services
+        options: ""
+        connection: ""
+        autoreconnect: false
+        startinterval: 2
+        maxerror: 5
+        customPool: false
+        maxConn: 5
+        maxIdle: 5
+        lifeTime: 5
+        useMock: false
+        multiStatements: false
+    timeout: 30000
+jwt:
+    access: random
+    refresh: random
+    expiredAccess: 30
+    expiredRefresh: 24
+keyAES: '!a@b3b$n$j6(KQM1'
+```
+
 4. Run program
-```azure
-go run main.go
+```
+    make run
 ```
 
 5. API URI
@@ -46,4 +76,13 @@ SHOW GRANTS FOR 'superadmin'@'0.0.0.0';
 
 ### ERD DATABASES
 
-![](./databasex.png)
+![database](/databasex.png)
+
+### TECH
+![Tech](/tech.PNG)
+
+
+## IMPROVEMENT FUTURE
+1. Tracing with jaeger
+
+

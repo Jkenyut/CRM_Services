@@ -48,6 +48,7 @@ func (repo *ClientRepositoryCustomer) CreateCustomer(ctx context.Context, req mo
 }
 
 func (repo *ClientRepositoryCustomer) GetCustomerByEmail(ctx context.Context, req model_customer.RequestCustomerEmail) (status int, err error, res model_customer.Customer) {
+
 	//timeout
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
