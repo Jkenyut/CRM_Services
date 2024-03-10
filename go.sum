@@ -1,5 +1,7 @@
 github.com/JGLTechnologies/gin-rate-limit v1.5.4 h1:1hIaXIdGM9MZFZlXgjWJLpxaK0WHEa5MeloK49nmQsc=
 github.com/JGLTechnologies/gin-rate-limit v1.5.4/go.mod h1:mGEhNzlHEg/Tk+KH/mKylZLTfDjACnx7MVYaAlj07eU=
+github.com/Jkenyut/libs-numeric-go v1.0.7 h1:iMIXrUHT8DI5S+bDXtpI51LACRRkkoa29ai+on//WVI=
+github.com/Jkenyut/libs-numeric-go v1.0.7/go.mod h1:vZ6ef0+wekcUWUwGx7vkQbVhjygogT748uihuJU0XiU=
 github.com/bsm/ginkgo/v2 v2.5.0 h1:aOAnND1T40wEdAtkGSkvSICWeQ8L3UASX7YVCqQx+eQ=
 github.com/bsm/gomega v1.20.0 h1:JhAwLmtRzXFTx2AkALSLa8ijZafntmhSoU63Ok18Uq8=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
