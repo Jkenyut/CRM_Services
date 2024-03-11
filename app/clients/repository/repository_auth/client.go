@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_jwt"
+	"github.com/Jkenyut/libs-numeric-go/libs_tracing"
 	"net/http"
 	"time"
 )
@@ -16,33 +17,46 @@ import (
 type ClientAuth struct {
 	client connection.InterfaceConnection
 	conf   *config.Config
+	tr     libs_tracing.InterfaceTracingJaegerOperation
 }
 
-func NewClientAuth(conf *config.Config, con connection.InterfaceConnection) InterfaceAuth {
+func NewClientAuth(conf *config.Config, con connection.InterfaceConnection, tr libs_tracing.InterfaceTracingJaegerOperation) InterfaceAuth {
 	return &ClientAuth{
 		client: con,
 		conf:   conf,
+		tr:     tr,
 	}
 }
-func (repo *ClientAuth) LoginActor(ctx context.Context, req model_actor.RequestActor, actorRepository *model_actor.ModelActor) (int, error) {
+func (repo *ClientAuth) LoginActor(ctx context.Context, req model_actor.RequestActor) (actorRepository model_actor.ModelActor, status int, err error) {
+	tr := repo.tr
+	_, ctx = tr.SetOperationChild("client auth")
+
+	defer tr.FinishChildOperation()
+
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()
 
 	var args []interface{}
 	args = append(args, req.Username)
-
+	tr.SetLog("request", req)
+	tr.SetLog("args", args)
 	queryLoginActor := "SELECT password,verified,role_id,active FROM actors WHERE username=?"
+
+	tr.SetLog("queryLoginActor", queryLoginActor)
 	res := repo.client.GetConnectionDB().WithContext(ctx).Raw(queryLoginActor, args...).Scan(&actorRepository)
 
 	if res.Error != nil {
+		tr.SetError("err", res.Error.Error())
 		// return an if mysql error
-		return http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
+		return actorRepository, http.StatusInternalServerError, errors.New("failed exec query login repository-model_actor")
 	} else if res.RowsAffected == 0 {
-		return http.StatusUnauthorized, fmt.Errorf("invalid username & password")
+		tr.SetError("err", "Not Found")
+		return actorRepository, http.StatusUnauthorized, fmt.Errorf("invalid username & password")
 	}
+	tr.SetLog("response", actorRepository)
 
-	return http.StatusOK, nil
+	return actorRepository, http.StatusOK, nil
 }
 
 func (repo *ClientAuth) InsertSession(ctx context.Context, activityId string, agent string, claimRefresh *libs_model_jwt.CustomClaims) (status int, error error) {
@@ -88,6 +102,11 @@ func (repo *ClientAuth) CheckSession(ctx context.Context, activityId string) (st
 }
 
 func (repo *ClientAuth) DeleteSession(ctx context.Context, activityId string) (status int, error error) {
+	tr := repo.tr
+	span, ctx := tr.SetOperationChild("client Delete")
+	repo.tr.SetLog("HH", "ooo")
+	defer span.Finish()
+
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(ctx, time.Duration(repo.conf.Database.Timeout)*time.Millisecond)
 	defer cancel()

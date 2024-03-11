@@ -1,6 +1,7 @@
 package services_customer
 
 import (
+	"context"
 	"crm_service/app/clients/connection"
 	"crm_service/app/clients/repository/repository_auth"
 	"crm_service/app/clients/repository/repository_customer"
@@ -8,12 +9,14 @@ import (
 	"crm_service/app/controllers/controller_customer"
 	"crm_service/app/middleware"
 	"crm_service/app/routes/route_customer"
+	"github.com/Jkenyut/libs-numeric-go/libs_tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 func NewServiceCustomer(router *gin.Engine, conf *config.Config, conn connection.InterfaceConnection, validator *validator.Validate) {
-	clientAuth := repository_auth.NewClientAuth(conf, conn)
+	tr := libs_tracing.NewTracingJaegerOperation(context.Background())
+	clientAuth := repository_auth.NewClientAuth(conf, conn, tr)
 	AuthJWTController := middleware.NewMiddlewareAuth(conf, clientAuth)
 	clientCustomer := repository_customer.NewClientCustomer(conf, conn)
 	controllerCustomer := controller_customer.NewControllerCustomer(clientCustomer, validator)
