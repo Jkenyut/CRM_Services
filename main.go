@@ -9,7 +9,6 @@ import (
 	"crm_service/app/services/services_customer"
 	"fmt"
 	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
-	"github.com/Jkenyut/libs-numeric-go/libs_tracing"
 	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ func main() {
 	conn.Init(false)
 
 	validators := validator.New()
-	router := gin.New()
+	router := gin.Default()
 	router.Use(cors.Default())
 	router.Use(helmet.Default())
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
@@ -34,9 +33,6 @@ func main() {
 		ErrorHandler: model.ErrorHandler,
 		KeyFunc:      model.KeyFunc,
 	})
-	init := libs_tracing.NewTracingJaeger("libs-numeric-crm")
-	do := init.InitJaeger()
-	defer do.Close()
 
 	router.Use(mw)
 	services_auth.NewServiceAuth(router, conf, conn, validators)

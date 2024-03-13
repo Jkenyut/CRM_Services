@@ -6,6 +6,7 @@ import (
 	"crm_service/app/middleware/pipeline"
 	"crm_service/app/model/model_actor"
 	"crm_service/app/utils/helper"
+	"encoding/json"
 	"fmt"
 	"github.com/Jkenyut/libs-numeric-go/libs_auth/libs_auth_jwt"
 	"github.com/Jkenyut/libs-numeric-go/libs_models/libs_model_jwt"
@@ -35,20 +36,59 @@ func NewControllerAuth(client repository_auth.InterfaceAuth, validate *validator
 	}
 }
 
+type Comment struct {
+	ID      string `json:"id"`
+	Content string `json:"content"`
+	PostID  string `json:"postId"`
+}
+
 func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 	var response libs_model_response.DefaultResponse
-
+	init := libs_tracing.NewTracingJaeger("libs-numeric-crm")
+	_, lo := init.InitJaeger()
+	defer lo.Close()
 	tr := ctr.tr
-	span, _ := tr.SetOperationParent(c.FullPath()+".LoginActor", c)
-	tr.TracingTag(c.Request)
-	defer span.Finish()
+
+	SpanParent, _ := tr.SetOperationParent(c, c.Request, "LoginActor")
+	defer SpanParent.Finish()
+
+	// Inject the SpanParent context into the HTTP request headers
+	// Set some tags to the span
+	url := fmt.Sprintf("http://localhost:9090/api/v1/comments?postId=%s", "1-ab-2")
+	req, err := http.NewRequestWithContext(c, "GET", url, nil)
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to send request: %v", err))
+		return
+	}
+
+	err = libs_tracing.Inject(SpanParent, req)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to send request: %v", err))
+		return
+	}
+	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	// Baca respons dari layanan lain
+	// Di sini Anda dapat memproses respons sesuai kebutuhan
+	// Contoh: mengembalikan konten respons kepada klien Gin
+	// Decode the JSON response
+	var data []Comment
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return
+	}
+
+	tr.SetLog("log", data)
 
 	// get header user-agent
 	agent := c.GetHeader("User-Agent")
 	tr.SetLog("agent", agent)
 	//bind to json
 	var request model_actor.RequestActor
-	err := c.BindJSON(&request)
+	err = c.BindJSON(&request)
 	if err != nil {
 		tr.SetError("required not valid", err.Error())
 		pipeline.AbortWithStatusJSON(c, http.StatusBadRequest, "required not valid")
@@ -117,7 +157,7 @@ func (ctr *ControllerAuth) LoginActor(c *gin.Context) {
 
 func (ctr *ControllerAuth) LogoutActor(c *gin.Context) {
 	tr := ctr.tr
-	span, _ := tr.SetOperationParent("Controller LogoutActor", c)
+	span, _ := tr.SetOperationParent(c, c.Request, "Controller LogoutActor")
 	tr.TracingTag(c.Request)
 	defer span.Finish()
 
